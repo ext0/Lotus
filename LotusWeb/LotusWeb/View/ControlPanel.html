@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Lotus</title>
+    @BaseCSS@
+    @BaseJS@
+    @Favicon@
+    @UserInfo@
+    <script src="Scripts/CPanelController.js"></script>
+</head>
+<body class="bg-grayLighter" ng-app="Lotus">
+    @Header@
+    <div class="page-content" style="position: fixed; height:100%; width:100%;" ng-controller="CPanelController">
+        <div class="flex-grid no-responsive-future" style="height: 100%;">
+            <div class="row" style="height: 100%">
+                <div class="cell size-x200 bg-red" style="height: 100%">
+                    <ul class="sidebar bg-red red">
+                        <li ng-repeat="entry in sidebar" ng-click="sidebarClick(entry)" ng-class="{'active' : activeTab == entry}">
+                            <a href="#">
+                                <span class="{{entry.icon}} icon"></span>
+                                <span class="title">{{entry.title}}</span>
+                                <span class="counter" ng-show="entry.caption">{{entry.caption}}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="cell auto-size padding20">
+                    <div ng-show="activeTab.title == 'overview'">
+                        <h1 class="text-light">Overview</h1>
+                        <hr class="thin bg-red" />
+                        <div class="flex-grid">
+                            <div class="row cells">
+                                <div class="cell size6 padding5">
+                                    <div class="panel bg-grayLighter">
+                                        <div class="heading bg-gray">
+                                            <span class="icon mif-meter bg-darkGray"></span>
+                                            <span class="title" data-role="hint" data-hint-background="bg-gray" data-hint-color="fg-white" data-hint-mode="3"
+                                                  data-hint="Statistics|Displays general information about all of your clients.">Statistics</span>
+                                        </div>
+                                        <div class="content bg-grayLight fg-grayLighter">
+                                            <!--
+                                            <div class="flex-grid">
+                                                <div class="row cells">
+                                                    <div class="cell size12">
+                                                        <div class="tabcontrol" data-role="tabcontrol">
+                                                            <ul class="tabs">
+                                                                <li class="active"><a href="#ClientStatistics">Clients</a></li>
+                                                                <li class=""><a href="#MetricStatistics">Metrics</a></li>
+                                                                <li class=""><a href="#HardwareStatistics">Hardware</a></li>
+                                                            </ul>
+                                                            <div class="frames bg-grayLighter">
+                                                                <div class="frame" style="padding: 5px;" id="ClientStatistics" style="display: block;">
+                                                                    <div class="flex-grid">
+                                                                        <div class="row cells bordered">
+                                                                            <div class="cell size6">
+                                                                                <h4 class="sub-header">Total clients</h4>
+                                                                            </div>
+                                                                            <div class="cell size6">
+                                                                                <h5 class="sub-alt-header">0 clients</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row cells bordered">
+                                                                            <div class="cell size6">
+                                                                                <h4 class="sub-header">Live clients</h4>
+                                                                            </div>
+                                                                            <div class="cell size6">
+                                                                                <h5 class="sub-alt-header">0 clients</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row cells bordered">
+                                                                            <div class="cell size6">
+                                                                                <h4 class="sub-header">Offline clients</h4>
+                                                                            </div>
+                                                                            <div class="cell size6">
+                                                                                <h5 class="sub-alt-header">0 clients</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row cells bordered">
+                                                                            <div class="cell size6">
+                                                                                <h4 class="sub-header">New clients</h4>
+                                                                            </div>
+                                                                            <div class="cell size6">
+                                                                                <h5 class="sub-alt-header">0 clients</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="frame" id="MetricStatistics" style="display: none;">
+
+                                                                </div>
+                                                                <div class="frame" id="HardwareStatistics" style="display: none;">
+                                                                    <div class="flex-grid">
+                                                                        <div class="row cells bordered">
+                                                                            <div class="cell size6">
+                                                                                <h4 class="sub-header">Average uptime</h4>
+                                                                            </div>
+                                                                            <div class="cell size6">
+                                                                                <h5 class="sub-alt-header">about 2 days</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row cells bordered">
+                                                                            <div class="cell size6">
+                                                                                <h4 class="sub-header">Average CPU usage</h4>
+                                                                            </div>
+                                                                            <div class="cell size6">
+                                                                                <h5 class="sub-alt-header">21.5%</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row cells bordered">
+                                                                            <div class="cell size6">
+                                                                                <h4 class="sub-header">Total CPU speed</h4>
+                                                                            </div>
+                                                                            <div class="cell size6">
+                                                                                <h5 class="sub-alt-header">61.3 GHz</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row cells bordered">
+                                                                            <div class="cell size6">
+                                                                                <h4 class="sub-header">Total storage capacity</h4>
+                                                                            </div>
+                                                                            <div class="cell size6">
+                                                                                <h5 class="sub-alt-header">162.4 TB</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cell size6 padding5">
+                                <div class="panel bg-grayLighter">
+                                    <div class="heading bg-red">
+                                        <span class="icon mif-mail bg-darkRed"></span>
+                                        <span class="title" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
+                                              data-hint="Events|Displays events that occurred to your clients recently.">Events</span>
+                                    </div>
+                                    <div class="content">
+                                        <table class="table border bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th class="sortable-column">Client</th>
+                                                    <th class="sortable-column">Time</th>
+                                                    <th class="sortable-column">Event</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Patrick\@Phoenix in Austin, TX</td>
+                                                    <td>4:32 PM 11/1/2016</td>
+                                                    <td>Unexpected Shutdown</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

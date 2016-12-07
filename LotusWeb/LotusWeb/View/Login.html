@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Lotus</title>
+    @BaseCSS@
+    @BaseJS@
+    @Favicon@
+    @UserInfo@
+    <script src="Scripts/LoginController.js"></script>
+</head>
+<body class="bg-grayLighter" ng-app="Lotus">
+    @Header@
+    <div class="page-content">
+        <div class="align-center">
+            <div class="container">
+                <div class="grid">
+                    <div class="row cells2">
+                        <div class="cell">
+                            <h1 class="iisub-leader text-light">Login</h1>
+                            <h4 class="sub-header text-light">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque at vulputate erat. Duis mollis libero in odio facilisis vestibulum. Aenean vitae erat in purus fringilla cursus. Pellentesque ornare diam vel ligula mollis, non eleifend lorem pulvinar. Maecenas suscipit commodo maximus. Nam ut libero condimentum, tincidunt dui vitae, cursus ex. Duis.</h4>
+                        </div>
+                        <div class="cell" ng-controller="LoginController">
+                            <div class="panel">
+                                <div class="heading bg-gray">
+                                    <span class="title">Login</span>
+                                </div>
+                                <div class="content bg-grayLighter">
+                                    <form name="LoginForm" novalidate ng-submit="submit()">
+                                        <div class="input-control text full-size" style="margin-top:24px;" ng-class="{'error':LoginForm.email.$invalid && LoginForm.email.$dirty}">
+                                            <label>Email</label>
+                                            <input name="email" ng-model="Login.email" style="padding-right: 36px;" type="email" required>
+                                        </div>
+                                        <div class="input-control password full-size" style="margin-top:18px;" ng-class="{'error':LoginForm.password.$invalid && LoginForm.password.$dirty}">
+                                            <label>Password</label>
+                                            <input name="password" ng-minlength="8" ng-model="Login.password" style="padding-right: 36px;" type="password" required>
+                                        </div>
+                                        <button class="button primary" type="submit">
+                                            Login
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
