@@ -66,11 +66,15 @@ namespace LotusRoot.CComm.TCP
                 byte[] packaged = packet.PackagedData;
                 byte[] decrypted = _cipher.RemoteAESDecrypt(packaged);
                 _thumbprint = BsonConvert.DeserializeObject<CThumbprint>(decrypted);
+
+                _ready = true;
+
                 return true;
             }
             catch (Exception e)
             {
                 Logger.Error("Failed to complete handshake! " + e.Message);
+                _ready = false;
                 return false;
             }
         }
@@ -152,12 +156,12 @@ namespace LotusRoot.CComm.TCP
             }
             RClientStore.RemoveLocalCThumbprint(Thumbprint);
 
-            String base64thumbprint = Convert.ToBase64String(BsonConvert.SerializeObject(Thumbprint));
-            LRequest request = new LRequest(null, "REMOVECTHUMB", base64thumbprint);
-            byte[] data = BsonConvert.SerializeObject(request);
-            byte[] encrypted = WHandler.WConnection.LocalCipher.RemoteAESEncrypt(data);
-            LPacket packet = new LPacket(encrypted, LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
-            WHandler.WConnection.SendPacket(packet);
+            if (WHandler.WConnection != null && WHandler.WConnection.Ready)
+            {
+                String base64thumbprint = Convert.ToBase64String(BsonConvert.SerializeObject(Thumbprint));
+                LRequest request = new LRequest(null, "REMOVECTHUMB", base64thumbprint);
+                WHandler.WConnection.SendRequest(request, LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
+            }
 
             foreach (Root root in RHandler.LiveRoots)
             {

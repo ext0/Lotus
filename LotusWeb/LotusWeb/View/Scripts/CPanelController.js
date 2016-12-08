@@ -41,7 +41,10 @@
     ];
     var dataStream = $websocket("ws://localhost:8888/COP");
     dataStream.onMessage(function (message) {
-        console.log(message.data);
+        var data = message.data;
+        var response = angular.fromJson(data);
+        var content = angular.fromJson(response.Data);
+        console.log(content);
     });
 
     $scope.buildRequest = function (command) {
@@ -57,7 +60,7 @@
     };
 
     $scope.getClientList = function () {
-        dataStream.send($scope.buildRequest("CLIENTLIST"));
+        dataStream.send($scope.buildRequest("GETCTHUMBS"));
     };
 
     $scope.getClientList();

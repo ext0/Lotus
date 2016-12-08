@@ -1,4 +1,5 @@
 ﻿using LotusRoot.RComm;
+using LotusWeb.Logic.RComm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,27 +10,32 @@ namespace LotusWeb.Data
 {
     public static class WRootStore
     {
-        private static List<Root> _roots = new List<Root>();
+        private static Dictionary<Root, RConnection> _roots = new Dictionary<Root, RConnection>();
 
         public static IList<Root> Roots
         {
             get
             {
-                return _roots.AsReadOnly();
+                return _roots.Keys.ToList();
             }
         }
 
-        public static void AddRoot(Root root)
+        public static RConnection GetConnectionFromRoot(Root root)
         {
-            if (!_roots.Contains(root))
+            return _roots[root];
+        }
+
+        public static void AddRoot(Root root, RConnection connection)
+        {
+            if (!_roots.ContainsKey(root))
             {
-                _roots.Add(root);
+                _roots.Add(root, connection);
             }
         }
 
         public static void RemoveRoot(Root root)
         {
-            if (_roots.Contains(root))
+            if (_roots.ContainsKey(root))
             {
                 _roots.Remove(root);
             }
@@ -37,11 +43,11 @@ namespace LotusWeb.Data
 
         public static Root GetRootByIdentifier(String identifier)
         {
-            foreach (Root root in _roots)
+            foreach (KeyValuePair<Root, RConnection> root in _roots)
             {
-                if (root.Identifier.Equals(identifier))
+                if (root.Key.Identifier.Equals(identifier))
                 {
-                    return root;
+                    return root.Key;
                 }
             }
             return null;

@@ -1,5 +1,9 @@
 ﻿using log4net;
+using LotusRoot.Bson;
+using LotusRoot.CComm.CData;
 using LotusRoot.Configuration;
+using LotusRoot.Datastore;
+using LotusRoot.LComm.Data;
 using LotusRoot.WComm.TCP;
 using System;
 using System.Collections.Generic;
@@ -39,9 +43,21 @@ namespace LotusRoot.WComm
             _connection.OpenStream();
         }
 
+        public static void UploadClientStore()
+        {
+            foreach (CThumbprint thumbprint in RClientStore.LocalThumbprints)
+            {
+                String base64thumbprint = Convert.ToBase64String(BsonConvert.SerializeObject(thumbprint));
+                LRequest request = new LRequest(null, "ADDCTHUMB", base64thumbprint);
+                _connection.SendRequest(request, LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
+            }
+        }
+
         public static void Start()
         {
             _connection.Handshake();
+
+            UploadClientStore();
 
             Timer poller = new Timer(new TimerCallback(_connection.PollConnection));
             poller.Change(0, WConnection.HEARTBEAT_POLL_TIME);

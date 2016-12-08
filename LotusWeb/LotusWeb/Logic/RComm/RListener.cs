@@ -66,7 +66,7 @@ namespace LotusWeb.Logic.RComm
                     client.Close();
                     return;
                 }
-                WRootStore.AddRoot(processor.Root);
+                WRootStore.AddRoot(processor.Root, processor);
                 Logger.Debug("Root (" + client.Client.RemoteEndPoint.ToString() + ") handshake completed (" + processor.Root.Identifier + ")");
                 Timer poller = new Timer(new TimerCallback(processor.PollConnection));
                 poller.Change(0, RConnection.HEARTBEAT_POLL_TIME);

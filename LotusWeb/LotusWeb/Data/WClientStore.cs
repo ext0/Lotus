@@ -59,7 +59,7 @@ namespace LotusWeb.Data
             return null;
         }
 
-        public static Root FindRootFromAuth(String auth)
+        public static IEnumerable<Root> FindRootFromAuth(String auth)
         {
             foreach (KeyValuePair<Root, List<CThumbprint>> thumbprints in _thumbprints)
             {
@@ -67,11 +67,24 @@ namespace LotusWeb.Data
                 {
                     if (loop.Auth.Equals(auth))
                     {
-                        return thumbprints.Key;
+                        yield return thumbprints.Key;
                     }
                 }
             }
-            return null;
+        }
+
+        public static IEnumerable<CThumbprint> GetThumbprintsFromAuth(String auth)
+        {
+            foreach (KeyValuePair<Root, List<CThumbprint>> thumbprints in _thumbprints)
+            {
+                foreach (CThumbprint loop in thumbprints.Value)
+                {
+                    if (loop.Auth.Equals(auth))
+                    {
+                        yield return loop;
+                    }
+                }
+            }
         }
     }
 }

@@ -18,6 +18,9 @@ namespace LotusWeb.WebSockets
     public class COPServer : WebSocketBehavior
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(COPServer));
+
+        private COPProcessor _processor;
+
         protected override void OnClose(CloseEventArgs e)
         {
         }
@@ -28,7 +31,13 @@ namespace LotusWeb.WebSockets
 
         protected override void OnOpen()
         {
+            _processor = new COPProcessor(this);
             Logger.Info("Opened!");
+        }
+
+        public void SendLResponse(LResponse response)
+        {
+            Send(Utility.serializeObjectToJSON(response));
         }
 
         protected override void OnMessage(MessageEventArgs e)
@@ -49,6 +58,7 @@ namespace LotusWeb.WebSockets
                     sb.Append(hash[i].ToString("x2"));
                 }
                 String hashText = sb.ToString();
+                _processor.Process(request, hashText);
             }
             catch (Exception ex)
             {

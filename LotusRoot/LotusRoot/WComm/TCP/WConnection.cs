@@ -21,7 +21,7 @@ namespace LotusRoot.WComm.TCP
     public class WConnection : LConnection
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(WConnection));
-        private static readonly LPacket WEB_HEARTBEAT_PACKET = new LPacket(new byte[] { }, LMetadata.HEARTBEAT | LMetadata.FROOT | LMetadata.TWEB);
+        private static readonly LPacket WEB_HEARTBEAT_PACKET = new LPacket(new byte[] { 0xFF }, LMetadata.HEARTBEAT | LMetadata.FROOT | LMetadata.TWEB);
 
         private String _host;
         private int _port;
@@ -82,11 +82,14 @@ namespace LotusRoot.WComm.TCP
                 LPacket rootPacket = new LPacket(_cipher.RemoteAESEncrypt(BsonConvert.SerializeObject(LocalRoot.Local)), LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
                 SendPacket(rootPacket);
 
+                _ready = true;
+
                 return true;
             }
             catch (Exception e)
             {
                 Logger.Error("Failed to complete handshake! " + e.Message);
+                _ready = false;
                 return false;
             }
         }

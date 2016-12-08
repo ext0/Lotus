@@ -18,7 +18,7 @@ namespace LotusWeb.Logic.RComm
     public class RConnection : LConnection
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LConnection));
-        private static readonly LPacket ROOT_HEARTBEAT_PACKET = new LPacket(new byte[] { }, LMetadata.HEARTBEAT | LMetadata.FWEB | LMetadata.TROOT);
+        private static readonly LPacket ROOT_HEARTBEAT_PACKET = new LPacket(new byte[] { 0xFF }, LMetadata.HEARTBEAT | LMetadata.FWEB | LMetadata.TROOT);
 
         private Root _root;
         private LCipher _remoteCipher;
@@ -63,11 +63,14 @@ namespace LotusWeb.Logic.RComm
                 byte[] decrypted = _cipher.LocalAESDecrypt(rootPacketPackage);
                 _root = BsonConvert.DeserializeObject<Root>(decrypted);
 
+                _ready = true;
+
                 return true;
             }
             catch (Exception e)
             {
                 Logger.Error("Failed to complete handshake! " + e.Message);
+                _ready = false;
                 return false;
             }
         }

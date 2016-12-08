@@ -1,4 +1,5 @@
-﻿using LotusRoot.LComm.Data;
+﻿using LotusRoot.Bson;
+using LotusRoot.LComm.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +18,10 @@ namespace LotusRoot.LComm.TCP
         protected TcpClient _client;
         protected NetworkStream _stream;
         protected LCipher _cipher;
+
         protected bool _open;
         protected ILCMDProcessor _cmdProcessor;
+        protected bool _ready;
 
         public bool IsConnected
         {
@@ -45,11 +48,26 @@ namespace LotusRoot.LComm.TCP
             }
         }
 
+        public bool Ready
+        {
+            get
+            {
+                return _ready;
+            }
+        }
+
         public void OpenStream()
         {
             _stream = _client.GetStream();
         }
 
+        public void SendRequest(LRequest request, LMetadata metadata)
+        {
+            byte[] data = BsonConvert.SerializeObject(request);
+            byte[] encrypted = _cipher.RemoteAESEncrypt(data);
+            LPacket packet = new LPacket(encrypted, metadata);
+            SendPacket(packet);
+        }
 
         public void SendPacket(LPacket packet)
         {

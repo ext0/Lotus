@@ -79,15 +79,11 @@ namespace LotusRoot.CComm.TCP
                 Logger.Debug("Client (" + client.Client.RemoteEndPoint.ToString() + ") handshake completed (" + processor.Thumbprint.CIdentifier + ")");
                 RClientStore.AddLocalCThumbprint(processor.Thumbprint);
 
-                String base64thumbprint = Convert.ToBase64String(BsonConvert.SerializeObject(processor.Thumbprint));
-                LRequest request = new LRequest(null, "ADDCTHUMB", base64thumbprint);
-                byte[] data = BsonConvert.SerializeObject(request);
-
-                if (WHandler.WConnection != null)
+                if (WHandler.WConnection != null && WHandler.WConnection.Ready)
                 {
-                    byte[] encrypted = WHandler.WConnection.LocalCipher.RemoteAESEncrypt(data);
-                    LPacket packet = new LPacket(encrypted, LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
-                    WHandler.WConnection.SendPacket(packet);
+                    String base64thumbprint = Convert.ToBase64String(BsonConvert.SerializeObject(processor.Thumbprint));
+                    LRequest request = new LRequest(null, "ADDCTHUMB", base64thumbprint);
+                    WHandler.WConnection.SendRequest(request, LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
                 }
 
                 foreach (Root root in RHandler.LiveRoots)

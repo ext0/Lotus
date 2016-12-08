@@ -53,7 +53,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LotusRoot">
+    <Reference Include="LotusRoot, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LotusRoot\LotusRoot\bin\Debug\LotusRoot.exe</HintPath>
     </Reference>
     <Reference Include="SaneWeb">
@@ -91,6 +92,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\BaseResources.cs" />
+    <Compile Include="WebSockets\COPProcessor.cs" />
     <Compile Include="WebSockets\COPServer.cs" />
   </ItemGroup>
   <ItemGroup>

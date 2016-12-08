@@ -159,7 +159,7 @@ namespace LotusRoot.LComm.Data
                 int read = 0;
                 while (read < data.Length)
                 {
-                    block = new byte[512];
+                    block = new byte[RSA_KEY_SIZE / 8];
                     int toRead = Math.Min(data.Length - read, block.Length);
                     Buffer.BlockCopy(data, read, block, 0, toRead);
                     read += toRead;
