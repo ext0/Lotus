@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Base64;
@@ -11,6 +12,7 @@ import java.util.EnumSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.log4j.Logger;
 import org.lotusconnect.data.BSONConvert;
 import org.lotusconnect.data.LPublicKey;
 import org.lotusconnect.data.CThumbprint;
@@ -23,6 +25,8 @@ public class RConnection {
 	private static final int RESPONSE_BUFFER_SIZE = 1024;
 	private static final int HEARTBEAT_POLL_TIME = 1000 * 30;
 
+	private static Logger LOGGER = Logger.getLogger(RConnection.class);
+
 	private int _port;
 	private String _hostname;
 	private Socket _socket;
@@ -34,25 +38,23 @@ public class RConnection {
 		_hostname = hostname;
 	}
 
-	public void connect() {
-		try {
-			_socket = new Socket(_hostname, _port);
-			_outgoingStream = new DataOutputStream(_socket.getOutputStream());
-			_incomingStream = new DataInputStream(_socket.getInputStream());
-			handshake();
-			TimerTask poll = new RPoll(this);
-			Timer timer = new Timer();
-			timer.schedule(poll, 0, HEARTBEAT_POLL_TIME);
-			keepListening();
-			_outgoingStream.flush();
-			_outgoingStream.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void connect() throws UnknownHostException, IOException {
+		_socket = new Socket(_hostname, _port);
+		_outgoingStream = new DataOutputStream(_socket.getOutputStream());
+		_incomingStream = new DataInputStream(_socket.getInputStream());
+		handshake();
 	}
 
-	public void handshake() {
+	public void start() throws IOException {
+		TimerTask poll = new RPoll(this);
+		Timer timer = new Timer();
+		timer.schedule(poll, 0, HEARTBEAT_POLL_TIME);
+		keepListening();
+		_outgoingStream.flush();
+		_outgoingStream.close();
+	}
+
+	private void handshake() {
 		try {
 			LPacket publicKeyHandshake = waitForResponse();
 			LPublicKey publicKey = (new BSONConvert<LPublicKey>()).deserialize(publicKeyHandshake.getPackagedData(),
@@ -143,5 +145,9 @@ public class RConnection {
 
 	public DataOutputStream getOutgoingStream() {
 		return _outgoingStream;
+	}
+
+	public String toString() {
+		return _hostname + ":" + _port;
 	}
 }

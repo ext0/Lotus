@@ -3,6 +3,8 @@ package org.lotusconnect.data;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,8 +15,10 @@ public class BSONConvert<T> {
 
 	private ObjectMapper mapper = new ObjectMapper(new BsonFactory());
 
+	private static Logger LOGGER = Logger.getLogger(BSONConvert.class);
+
 	public BSONConvert() {
-		mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);  
+		mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
 		mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
 				.withFieldVisibility(Visibility.NONE).withGetterVisibility(Visibility.PUBLIC_ONLY)
 				.withSetterVisibility(Visibility.PUBLIC_ONLY).withCreatorVisibility(Visibility.NONE));
@@ -25,7 +29,7 @@ public class BSONConvert<T> {
 		try {
 			return mapper.readValue(memoryStream, clazz);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to deserialize object from BSON: " + e.getMessage());
 			return null;
 		}
 	}
@@ -36,7 +40,7 @@ public class BSONConvert<T> {
 			mapper.writeValue(memoryStream, obj);
 			return memoryStream.toByteArray();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to serialize object to BSON: " + e.getMessage());
 			return null;
 		}
 	}

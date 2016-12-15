@@ -28,6 +28,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.log4j.Logger;
 import org.lotusconnect.data.LAESInfo;
 import org.lotusconnect.data.LPublicKey;
 
@@ -49,37 +50,51 @@ public class LCipher {
 
 	private static LAESInfo _localAESInfo;
 
-	public static void generateSymmetricCipher() throws NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, InvalidAlgorithmParameterException {
-		SecureRandom random = new SecureRandom();
-		byte[] key = new byte[AES_KEY_SIZE];
-		random.nextBytes(key);
+	private static Logger LOGGER = Logger.getLogger(LCipher.class);
 
-		SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+	public static boolean generateSymmetricCipher() {
+		try {
 
-		_localSymmetricCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-		_localSymmetricCipher.init(Cipher.ENCRYPT_MODE, keySpec);
+			SecureRandom random = new SecureRandom();
+			byte[] key = new byte[AES_KEY_SIZE];
+			random.nextBytes(key);
 
-		_localAESInfo = new LAESInfo(Base64.getEncoder().encodeToString(_localSymmetricCipher.getIV()),
-				Base64.getEncoder().encodeToString(key));
+			SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+
+			_localSymmetricCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+			_localSymmetricCipher.init(Cipher.ENCRYPT_MODE, keySpec);
+
+			_localAESInfo = new LAESInfo(Base64.getEncoder().encodeToString(_localSymmetricCipher.getIV()),
+					Base64.getEncoder().encodeToString(key));
+			return true;
+		} catch (Exception e) {
+			LOGGER.fatal("Failed to generate symmetric key: " + e.getMessage());
+			return false;
+		}
 
 	}
 
-	public static void generateAssymmetricCipher()
-			throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException {
-		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-		keyPairGenerator.initialize(RSA_KEY_SIZE);
-		KeyPair keyPair = keyPairGenerator.generateKeyPair();
-		PublicKey publicKey = keyPair.getPublic();
-		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		RSAPublicKeySpec rsaPubKeySpec = keyFactory.getKeySpec(publicKey, RSAPublicKeySpec.class);
-		byte[] modulus = rsaPubKeySpec.getModulus().toByteArray();
-		byte[] exponent = rsaPubKeySpec.getPublicExponent().toByteArray();
-		_localPublicKey = new LPublicKey(Base64.getEncoder().encodeToString(Arrays.copyOfRange(modulus, 1, modulus.length)),
-				Base64.getEncoder().encodeToString(Arrays.copyOfRange(exponent, 0, exponent.length)));
-		RSAPrivateKeySpec rsaPrivKeySpec = keyFactory.getKeySpec(keyPair.getPrivate(), RSAPrivateKeySpec.class);
-		_localAsymmetricCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-		_localAsymmetricCipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
+	public static boolean generateAssymmetricCipher() {
+		try {
+			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+			keyPairGenerator.initialize(RSA_KEY_SIZE);
+			KeyPair keyPair = keyPairGenerator.generateKeyPair();
+			PublicKey publicKey = keyPair.getPublic();
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+			RSAPublicKeySpec rsaPubKeySpec = keyFactory.getKeySpec(publicKey, RSAPublicKeySpec.class);
+			byte[] modulus = rsaPubKeySpec.getModulus().toByteArray();
+			byte[] exponent = rsaPubKeySpec.getPublicExponent().toByteArray();
+			_localPublicKey = new LPublicKey(
+					Base64.getEncoder().encodeToString(Arrays.copyOfRange(modulus, 1, modulus.length)),
+					Base64.getEncoder().encodeToString(Arrays.copyOfRange(exponent, 0, exponent.length)));
+			RSAPrivateKeySpec rsaPrivKeySpec = keyFactory.getKeySpec(keyPair.getPrivate(), RSAPrivateKeySpec.class);
+			_localAsymmetricCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			_localAsymmetricCipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
+			return true;
+		} catch (Exception e) {
+			LOGGER.fatal("Failed to generate assymmetric keypair: " + e.getMessage());
+			return false;
+		}
 	}
 
 	public static void loadRemoteAESInfo(LAESInfo info) throws InvalidKeyException, InvalidAlgorithmParameterException,
