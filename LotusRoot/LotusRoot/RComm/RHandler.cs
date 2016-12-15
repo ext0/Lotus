@@ -4,6 +4,7 @@ using LotusRoot.CComm.CData;
 using LotusRoot.Datastore;
 using LotusRoot.RComm;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,7 @@ namespace LotusRoot.RComm
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RHandler));
 
-        private static Dictionary<Root, RootStatus> _roots = new Dictionary<Root, RootStatus>();
+        private static ConcurrentDictionary<Root, RootStatus> _roots = new ConcurrentDictionary<Root, RootStatus>();
         private static TimeSpan _rootCacheDead = TimeSpan.FromMinutes(1d);
         private static DateTime _lastRootQuery = DateTime.MinValue;
 
@@ -108,7 +109,10 @@ namespace LotusRoot.RComm
 
         public static void RegisterRoot(String IP, short rport)
         {
-            _roots.Add(new Root(IP, new short[] { }, rport, String.Empty), RootStatus.REGISTERED);
+            if (!_roots.TryAdd(new Root(IP, new short[] { }, rport, String.Empty), RootStatus.REGISTERED))
+            {
+                throw new Exception("Failed to add Root due to concurrency issue!");
+            }
         }
     }
 }

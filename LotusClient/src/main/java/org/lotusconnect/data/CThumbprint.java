@@ -5,12 +5,14 @@ public class CThumbprint {
 	private int _cversion;
 	private String _cip;
 	private String _auth;
+	private String _hostname;
 
-	public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth) {
+	public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth, String hostname) {
 		_cidentifier = cIdentifier;
 		_cversion = cVersion;
 		_cip = cIP;
 		_auth = auth;
+		_hostname = hostname;
 	}
 
 	public String getCIdentifier() {
@@ -43,6 +45,14 @@ public class CThumbprint {
 
 	public void setAuth(String auth) {
 		this._auth = auth;
+	}
+
+	public String getHostname() {
+		return _hostname;
+	}
+
+	public void setHostname(String hostname) {
+		_hostname = hostname;
 	}
 
 }

@@ -15,14 +15,16 @@ namespace LotusRoot.CComm.CData
         private String _cip;
         private DateTime _lastheartbeat;
         private String _auth;
+        private String _hostname;
 
-        public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth)
+        public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth, String hostname)
         {
             _cidentifier = cIdentifier;
             _cversion = cVersion;
             _cip = cIP;
             _lastheartbeat = DateTime.MinValue;
             _auth = auth;
+            _hostname = hostname;
         }
 
         public String Auth
@@ -70,6 +72,18 @@ namespace LotusRoot.CComm.CData
             set
             {
                 _cip = value;
+            }
+        }
+
+        public String Hostname
+        {
+            get
+            {
+                return _hostname;
+            }
+            set
+            {
+                _hostname = value;
             }
         }
 

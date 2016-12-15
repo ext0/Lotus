@@ -18,6 +18,7 @@ import org.lotusconnect.data.LPublicKey;
 import org.lotusconnect.data.CThumbprint;
 import org.lotusconnect.data.LAESInfo;
 import org.lotusconnect.data.LocalConfig;
+import org.lotusconnect.data.system.SystemInfo;
 import org.lotusconnect.main.Program;
 
 public class RConnection {
@@ -87,7 +88,8 @@ public class RConnection {
 			}
 
 			String identifier = Base64.getEncoder().encodeToString(LocalConfig.loadConfig().getCIdentifier());
-			CThumbprint thumbprint = new CThumbprint(identifier, Program.APPLICATION_VERSION, "local", Program.AUTH);
+			CThumbprint thumbprint = new CThumbprint(identifier, Program.APPLICATION_VERSION, "local", Program.AUTH,
+					SystemInfo.getHostname());
 
 			{
 				byte[] bsonThumbprint = (new BSONConvert<CThumbprint>()).serialize(thumbprint);
@@ -104,10 +106,14 @@ public class RConnection {
 		}
 	}
 
-	private void keepListening() {
+	private void keepListening() throws IOException {
 		while (true) {
 			LPacket packet = waitForResponse();
-			System.out.println("CM : " + LMetadata.fromByte(packet.getMetadata()));
+			if (packet != null) {
+				System.out.println("CM : " + LMetadata.fromByte(packet.getMetadata()));
+			} else {
+				throw new IOException("Malformed packet!");
+			}
 		}
 	}
 
@@ -134,7 +140,7 @@ public class RConnection {
 			}
 			return new LPacket(header, metadata, data);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.warn("Error occurred waiting for response: " + e.getMessage());
 			return null;
 		}
 	}
