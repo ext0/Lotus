@@ -23,7 +23,7 @@ namespace LotusWeb.Logic.RComm
             _connection = connection;
         }
 
-        public void Process(LRequest request)
+        public void ProcessRequest(LRequest request)
         {
             Logger.Info("Received request (" + request.Command + ")");
             if (request.Command.Equals("ADDCTHUMB"))
@@ -38,6 +38,11 @@ namespace LotusWeb.Logic.RComm
                 CThumbprint thumbprint = BsonConvert.DeserializeObject<CThumbprint>(data);
                 WClientStore.RemoveCThumbprint(_connection.Root, thumbprint);
             }
+        }
+
+        public void ProcessResponse(LResponse response)
+        {
+            _connection.Tracker.FulfillRequest(response);
         }
     }
 }

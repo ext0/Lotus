@@ -1,6 +1,7 @@
 ﻿using log4net;
 using LotusRoot.CComm.CData;
 using LotusRoot.RComm;
+using LotusWeb.Logic.RComm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,17 @@ namespace LotusWeb.Data
             }
         }
 
-        public static Root FindRootFromCThumbprint(String identifier)
+        public static RConnection GetConnectionFromCIdentifier(String identifier)
+        {
+            Root root = FindRootFromCIdentifier(identifier);
+            if (root != null)
+            {
+                return WRootStore.GetConnectionFromRoot(root);
+            }
+            return null;
+        }
+
+        public static Root FindRootFromCIdentifier(String identifier)
         {
             foreach (KeyValuePair<Root, List<CThumbprint>> thumbprints in _thumbprints)
             {

@@ -18,7 +18,7 @@ namespace LotusWeb.Logic.RComm
     public class RConnection : LConnection
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LConnection));
-        private static readonly LPacket ROOT_HEARTBEAT_PACKET = new LPacket(new byte[] { 0xFF }, LMetadata.HEARTBEAT | LMetadata.FWEB | LMetadata.TROOT);
+        private static readonly LPacket ROOT_HEARTBEAT_PACKET = new LPacket(new byte[] { 0xFF }, LMetadata.HEARTBEAT);
 
         private Root _root;
         private LCipher _remoteCipher;
@@ -28,6 +28,7 @@ namespace LotusWeb.Logic.RComm
             _client = client;
             _cipher = new LCipher();
             _cmdProcessor = new RCommandProcessor(this);
+            _tracker = new LASyncRequestTracker();
         }
 
         public Root Root
@@ -47,7 +48,7 @@ namespace LotusWeb.Logic.RComm
                 LPublicKey key = BsonConvert.DeserializeObject<LPublicKey>(publicKeyPackage);
                 _remoteCipher = new LCipher(key);
 
-                LPacket handshakePacket = new LPacket(BsonConvert.SerializeObject(_cipher.PublicKey), LMetadata.FROOT | LMetadata.TCLIENT);
+                LPacket handshakePacket = new LPacket(BsonConvert.SerializeObject(_cipher.PublicKey), LMetadata.NOTHING);
                 SendPacket(handshakePacket);
 
                 LPacket remoteAESPacket = WaitForResponse();
@@ -55,7 +56,7 @@ namespace LotusWeb.Logic.RComm
                 LAESInfo remoteAESInfo = BsonConvert.DeserializeObject<LAESInfo>(_cipher.PDecrypt(remoteAESPackage));
                 _cipher.LoadRemoteAES(remoteAESInfo);
 
-                LPacket localAESPacket = new LPacket(_remoteCipher.PEncrypt(BsonConvert.SerializeObject(_cipher.LocalAESInfo)), LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
+                LPacket localAESPacket = new LPacket(_remoteCipher.PEncrypt(BsonConvert.SerializeObject(_cipher.LocalAESInfo)), LMetadata.HANDSHAKE | LMetadata.ENCRYPTED);
                 SendPacket(localAESPacket);
 
                 LPacket rootPacket = WaitForResponse();
@@ -86,22 +87,27 @@ namespace LotusWeb.Logic.RComm
                     {
                         continue;
                     }
-                    if (data.Metadata.HasFlag(LMetadata.FROOT))
+                    byte[] packaged = data.PackagedData;
+                    if (data.Metadata.HasFlag(LMetadata.ENCRYPTED))
                     {
-                        byte[] packaged = data.PackagedData;
-                        if (data.Metadata.HasFlag(LMetadata.ENCRYPTED))
-                        {
-                            packaged = _cipher.LocalAESDecrypt(packaged);
-                        }
-                        try
+                        packaged = _cipher.LocalAESDecrypt(packaged);
+                    }
+                    try
+                    {
+                        if (data.Metadata.HasFlag(LMetadata.REQUEST))
                         {
                             LRequest request = BsonConvert.DeserializeObject<LRequest>(packaged);
-                            _cmdProcessor.Process(request);
+                            _cmdProcessor.ProcessRequest(request);
                         }
-                        catch (Exception e)
+                        else if (data.Metadata.HasFlag(LMetadata.RESPONSE))
                         {
-                            Logger.Error("Unrecognized/unprocessed (possible scary) data in packet " + data.ToString() + " : " + e.Message);
+                            LResponse response = BsonConvert.DeserializeObject<LResponse>(packaged);
+                            _cmdProcessor.ProcessResponse(response);
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Unrecognized/unprocessed (possible scary) data in packet " + data.ToString() + " : " + e.Message);
                     }
                 }
                 catch (ObjectDisposedException)

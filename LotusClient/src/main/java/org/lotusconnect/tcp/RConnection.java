@@ -12,9 +12,14 @@ import java.util.EnumSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+
 import org.apache.log4j.Logger;
 import org.lotusconnect.data.BSONConvert;
 import org.lotusconnect.data.LPublicKey;
+import org.lotusconnect.data.LRequest;
+import org.lotusconnect.data.LResponse;
 import org.lotusconnect.data.CThumbprint;
 import org.lotusconnect.data.LAESInfo;
 import org.lotusconnect.data.LocalConfig;
@@ -34,9 +39,17 @@ public class RConnection {
 	private DataOutputStream _outgoingStream;
 	private DataInputStream _incomingStream;
 
+	private RCommandProcessor _processor;
+
+	private BSONConvert<LResponse> _bsonResponse;
+	private BSONConvert<LRequest> _bsonRequest;
+
 	public RConnection(String hostname, int port) {
 		_port = port;
 		_hostname = hostname;
+		_processor = new RCommandProcessor(this);
+		_bsonResponse = new BSONConvert<LResponse>();
+		_bsonRequest = new BSONConvert<LRequest>();
 	}
 
 	public void connect() throws UnknownHostException, IOException {
@@ -46,7 +59,7 @@ public class RConnection {
 		handshake();
 	}
 
-	public void start() throws IOException {
+	public void start() throws IOException, IllegalBlockSizeException, BadPaddingException {
 		TimerTask poll = new RPoll(this);
 		Timer timer = new Timer();
 		timer.schedule(poll, 0, HEARTBEAT_POLL_TIME);
@@ -58,29 +71,27 @@ public class RConnection {
 	private void handshake() {
 		try {
 			LPacket publicKeyHandshake = waitForResponse();
-			LPublicKey publicKey = (new BSONConvert<LPublicKey>()).deserialize(publicKeyHandshake.getPackagedData(),
+			LPublicKey publicKey = (new BSONConvert<LPublicKey>()).fromBytes(publicKeyHandshake.getPackagedData(),
 					LPublicKey.class);
 			LCipher.setRemotePublicKey(publicKey);
 
 			{
-				byte[] bsonPublicKey = (new BSONConvert<LPublicKey>()).serialize(LCipher.getLocalPublicKey());
+				byte[] bsonPublicKey = (new BSONConvert<LPublicKey>()).toBytes(LCipher.getLocalPublicKey());
 				EnumSet<LMetadata> metadata = EnumSet.noneOf(LMetadata.class);
-				metadata.add(LMetadata.FCLIENT);
-				metadata.add(LMetadata.TROOT);
+				metadata.add(LMetadata.HANDSHAKE);
 				LPacket packet = new LPacket(bsonPublicKey, metadata);
 				sendPacket(packet);
 			}
 
 			LPacket aesHandshake = waitForResponse();
 			byte[] aesHandshakePackage = LCipher.localDecrypt(aesHandshake.getPackagedData());
-			LAESInfo remoteAESInfo = (new BSONConvert<LAESInfo>()).deserialize(aesHandshakePackage, LAESInfo.class);
+			LAESInfo remoteAESInfo = (new BSONConvert<LAESInfo>()).fromBytes(aesHandshakePackage, LAESInfo.class);
 			LCipher.loadRemoteAESInfo(remoteAESInfo);
 
 			{
-				byte[] aesData = (new BSONConvert<LAESInfo>()).serialize(LCipher.getLocalAESInfo());
+				byte[] aesData = (new BSONConvert<LAESInfo>()).toBytes(LCipher.getLocalAESInfo());
 				EnumSet<LMetadata> metadata = EnumSet.noneOf(LMetadata.class);
-				metadata.add(LMetadata.FCLIENT);
-				metadata.add(LMetadata.TROOT);
+				metadata.add(LMetadata.HANDSHAKE);
 				metadata.add(LMetadata.ENCRYPTED);
 				byte[] encrypted = LCipher.remoteEncrypt(aesData);
 				LPacket packet = new LPacket(encrypted, metadata);
@@ -92,29 +103,62 @@ public class RConnection {
 					SystemInfo.getHostname());
 
 			{
-				byte[] bsonThumbprint = (new BSONConvert<CThumbprint>()).serialize(thumbprint);
+				byte[] bsonThumbprint = (new BSONConvert<CThumbprint>()).toBytes(thumbprint);
 				EnumSet<LMetadata> metadata = EnumSet.noneOf(LMetadata.class);
-				metadata.add(LMetadata.FCLIENT);
-				metadata.add(LMetadata.TROOT);
+				metadata.add(LMetadata.HANDSHAKE);
 				metadata.add(LMetadata.ENCRYPTED);
-				byte[] encrypted = LCipher.localAESEncrypt(bsonThumbprint);
+				byte[] encrypted = LCipher.remoteAESEncrypt(bsonThumbprint);
 				LPacket packet = new LPacket(encrypted, metadata);
 				sendPacket(packet);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.fatal("Failed handshake! " + e.getMessage());
 		}
 	}
 
-	private void keepListening() throws IOException {
+	private void keepListening() throws IOException, IllegalBlockSizeException, BadPaddingException {
 		while (true) {
 			LPacket packet = waitForResponse();
 			if (packet != null) {
-				System.out.println("CM : " + LMetadata.fromByte(packet.getMetadata()));
+				EnumSet<LMetadata> metadata = LMetadata.fromByte(packet.getMetadata());
+				byte[] packaged = packet.getPackagedData();
+				if (metadata.contains(LMetadata.HANDSHAKE)) {
+					continue;
+				}
+				if (metadata.contains(LMetadata.ENCRYPTED)) {
+					packaged = LCipher.localAESDecrypt(packaged);
+				}
+				if (metadata.contains(LMetadata.REQUEST)) {
+					LRequest request = _bsonRequest.fromBytes(packaged, LRequest.class);
+					_processor.processRequest(request);
+				} else if (metadata.contains(LMetadata.RESPONSE)) {
+					LResponse response = _bsonResponse.fromBytes(packaged, LResponse.class);
+					_processor.processResponse(response);
+				}
 			} else {
 				throw new IOException("Malformed packet!");
 			}
 		}
+	}
+
+	public void sendRequest(LRequest request, EnumSet<LMetadata> metadata)
+			throws IllegalBlockSizeException, BadPaddingException, IOException {
+		byte[] data = _bsonRequest.toBytes(request);
+		byte[] encrypted = LCipher.remoteAESEncrypt(data);
+		metadata.add(LMetadata.ENCRYPTED);
+		metadata.add(LMetadata.REQUEST);
+		LPacket packet = new LPacket(encrypted, metadata);
+		sendPacket(packet);
+	}
+
+	public void sendResponse(LResponse response, EnumSet<LMetadata> metadata)
+			throws IOException, IllegalBlockSizeException, BadPaddingException {
+		byte[] data = _bsonResponse.toBytes(response);
+		byte[] encrypted = LCipher.remoteAESEncrypt(data);
+		metadata.add(LMetadata.ENCRYPTED);
+		metadata.add(LMetadata.RESPONSE);
+		LPacket packet = new LPacket(encrypted, metadata);
+		sendPacket(packet);
 	}
 
 	public void sendPacket(LPacket packet) throws IOException {

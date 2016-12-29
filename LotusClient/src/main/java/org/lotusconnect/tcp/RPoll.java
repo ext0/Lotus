@@ -23,8 +23,6 @@ public class RPoll extends TimerTask {
 	
 	private LPacket getHeartbeatPacket() {
 		EnumSet<LMetadata> metadata = EnumSet.noneOf(LMetadata.class);
-		metadata.add(LMetadata.FCLIENT);
-		metadata.add(LMetadata.TROOT);
 		metadata.add(LMetadata.HEARTBEAT);
 	    return new LPacket(new byte[] { }, metadata);
 	}

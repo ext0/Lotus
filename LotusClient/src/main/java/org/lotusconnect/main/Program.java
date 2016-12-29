@@ -30,7 +30,7 @@ public class Program {
 		}
 
 		LOGGER.info("Attempting to open connection...");
-		RConnection connection = new RConnection("192.168.1.5", 25321);
+		RConnection connection = new RConnection("192.168.1.21", 25321);
 		while (!attemptConnection(connection)) {
 			try {
 				Thread.sleep(1000);
@@ -42,8 +42,9 @@ public class Program {
 		LOGGER.info("Successfully connected to remote root!");
 		try {
 			connection.start();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOGGER.fatal("Error occured while communicating with root: " + e.getMessage());
+			e.printStackTrace();
 			errorExit();
 		}
 	}

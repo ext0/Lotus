@@ -21,7 +21,7 @@ namespace LotusRoot.CComm.TCP
     public class CConnection : LConnection
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(CConnection));
-        private static readonly LPacket CLIENT_HEARTBEAT_PACKET = new LPacket(new byte[] { }, LMetadata.HEARTBEAT | LMetadata.FROOT | LMetadata.TCLIENT);
+        private static readonly LPacket CLIENT_HEARTBEAT_PACKET = new LPacket(new byte[] { }, LMetadata.HEARTBEAT);
 
         private CThumbprint _thumbprint;
         private LCipher _remoteCipher;
@@ -31,6 +31,7 @@ namespace LotusRoot.CComm.TCP
             _client = client;
             _cipher = new LCipher();
             _cmdProcessor = new CCommandProcessor(this);
+            _tracker = new LASyncRequestTracker();
         }
 
         public CThumbprint Thumbprint
@@ -45,7 +46,7 @@ namespace LotusRoot.CComm.TCP
         {
             try
             {
-                LPacket handshakePacket = new LPacket(BsonConvert.SerializeObject(_cipher.PublicKey), LMetadata.FROOT | LMetadata.TCLIENT);
+                LPacket handshakePacket = new LPacket(BsonConvert.SerializeObject(_cipher.PublicKey), LMetadata.HANDSHAKE);
                 SendPacket(handshakePacket);
 
                 LPacket publicKeyPacket = WaitForResponse();
@@ -54,7 +55,7 @@ namespace LotusRoot.CComm.TCP
                 LPublicKey key = BsonConvert.DeserializeObject<LPublicKey>(publicKeyPackage);
                 _remoteCipher = new LCipher(key);
 
-                LPacket localAESPacket = new LPacket(_remoteCipher.PEncrypt(BsonConvert.SerializeObject(_cipher.LocalAESInfo)), LMetadata.FROOT | LMetadata.TWEB);
+                LPacket localAESPacket = new LPacket(_remoteCipher.PEncrypt(BsonConvert.SerializeObject(_cipher.LocalAESInfo)), LMetadata.HANDSHAKE);
                 SendPacket(localAESPacket);
 
                 LPacket remoteAESPacket = WaitForResponse();
@@ -64,7 +65,7 @@ namespace LotusRoot.CComm.TCP
 
                 LPacket packet = WaitForResponse();
                 byte[] packaged = packet.PackagedData;
-                byte[] decrypted = _cipher.RemoteAESDecrypt(packaged);
+                byte[] decrypted = _cipher.LocalAESDecrypt(packaged);
                 _thumbprint = BsonConvert.DeserializeObject<CThumbprint>(decrypted);
 
                 _ready = true;
@@ -90,22 +91,27 @@ namespace LotusRoot.CComm.TCP
                     {
                         continue;
                     }
-                    if (data.Metadata.HasFlag(LMetadata.FCLIENT))
+                    byte[] packaged = data.PackagedData;
+                    if (data.Metadata.HasFlag(LMetadata.ENCRYPTED))
                     {
-                        byte[] packaged = data.PackagedData;
-                        if (data.Metadata.HasFlag(LMetadata.ENCRYPTED))
-                        {
-                            packaged = _remoteCipher.RemoteAESDecrypt(packaged);
-                        }
-                        try
+                        packaged = _cipher.LocalAESDecrypt(packaged);
+                    }
+                    try
+                    {
+                        if (data.Metadata.HasFlag(LMetadata.REQUEST))
                         {
                             LRequest request = BsonConvert.DeserializeObject<LRequest>(packaged);
-                            _cmdProcessor.Process(request);
+                            _cmdProcessor.ProcessRequest(request);
                         }
-                        catch (Exception e)
+                        else if (data.Metadata.HasFlag(LMetadata.RESPONSE))
                         {
-                            Logger.Error("Unrecognized (possible scary) data in packet " + data.ToString() + " : " + e.Message);
+                            LResponse response = BsonConvert.DeserializeObject<LResponse>(packaged);
+                            _cmdProcessor.ProcessResponse(response);
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Unrecognized (possible scary) data in packet " + data.ToString() + " : " + e.Message);
                     }
                 }
                 catch (ObjectDisposedException)
@@ -159,8 +165,8 @@ namespace LotusRoot.CComm.TCP
             if (WHandler.WConnection != null && WHandler.WConnection.Ready)
             {
                 String base64thumbprint = Convert.ToBase64String(BsonConvert.SerializeObject(Thumbprint));
-                LRequest request = new LRequest(null, "REMOVECTHUMB", base64thumbprint);
-                WHandler.WConnection.SendRequest(request, LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
+                LRequest request = new LRequest(null, "REMOVECTHUMB", false, base64thumbprint);
+                WHandler.WConnection.SendRequest(request, LMetadata.NOTHING);
             }
 
             foreach (Root root in RHandler.LiveRoots)

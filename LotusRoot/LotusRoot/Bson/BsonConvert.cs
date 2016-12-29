@@ -28,7 +28,7 @@ namespace LotusRoot.Bson
         {
             using (MemoryStream memory = new MemoryStream(bson))
             {
-                using (BsonReader reader = new BsonReader(memory))
+                using (BsonReader reader = new BsonReader(memory, typeof(T).IsArray, DateTimeKind.Local))
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     return serializer.Deserialize<T>(reader);

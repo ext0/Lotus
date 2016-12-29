@@ -21,7 +21,7 @@ public class LocalConfig {
 		LocalConfig config;
 		try {
 			byte[] buffer = FileUtils.readFileToByteArray(CONFIG_PATH);
-			config = (new BSONConvert<LocalConfig>()).deserialize(buffer, LocalConfig.class);
+			config = (new BSONConvert<LocalConfig>()).fromBytes(buffer, LocalConfig.class);
 		} catch (Exception e) {
 			config = new LocalConfig();
 		}
@@ -38,7 +38,7 @@ public class LocalConfig {
 			CONFIG_PATH.createNewFile();
 			LocalConfig config = new LocalConfig();
 			config.setCIdentifier(UUID.randomUUID().toString().getBytes());
-			byte[] bson = (new BSONConvert<LocalConfig>()).serialize(config);
+			byte[] bson = (new BSONConvert<LocalConfig>()).toBytes(config);
 			FileUtils.writeByteArrayToFile(CONFIG_PATH, bson);
 		} catch (IOException e) {
 			e.printStackTrace();

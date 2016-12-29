@@ -21,7 +21,7 @@ namespace LotusRoot.WComm.TCP
     public class WConnection : LConnection
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(WConnection));
-        private static readonly LPacket WEB_HEARTBEAT_PACKET = new LPacket(new byte[] { 0xFF }, LMetadata.HEARTBEAT | LMetadata.FROOT | LMetadata.TWEB);
+        private static readonly LPacket WEB_HEARTBEAT_PACKET = new LPacket(new byte[] { 0xFF }, LMetadata.HEARTBEAT);
 
         private String _host;
         private int _port;
@@ -49,6 +49,7 @@ namespace LotusRoot.WComm.TCP
             _cipher = new LCipher();
             _open = true;
             _cmdProcessor = new WCommandProcessor(this);
+            _tracker = new LASyncRequestTracker();
         }
 
         public LCipher LocalCipher
@@ -63,7 +64,7 @@ namespace LotusRoot.WComm.TCP
         {
             try
             {
-                LPacket handshakePacket = new LPacket(BsonConvert.SerializeObject(_cipher.PublicKey), LMetadata.FROOT | LMetadata.TWEB);
+                LPacket handshakePacket = new LPacket(BsonConvert.SerializeObject(_cipher.PublicKey), LMetadata.HANDSHAKE);
                 SendPacket(handshakePacket);
 
                 LPacket publicKeyPacket = WaitForResponse();
@@ -71,7 +72,7 @@ namespace LotusRoot.WComm.TCP
                 LPublicKey key = BsonConvert.DeserializeObject<LPublicKey>(publicKeyPackage);
                 _remoteCipher = new LCipher(key);
 
-                LPacket localAESPacket = new LPacket(_remoteCipher.PEncrypt(BsonConvert.SerializeObject(_cipher.LocalAESInfo)), LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
+                LPacket localAESPacket = new LPacket(_remoteCipher.PEncrypt(BsonConvert.SerializeObject(_cipher.LocalAESInfo)), LMetadata.HANDSHAKE | LMetadata.ENCRYPTED);
                 SendPacket(localAESPacket);
 
                 LPacket remoteAESPacket = WaitForResponse();
@@ -79,7 +80,7 @@ namespace LotusRoot.WComm.TCP
                 LAESInfo remoteAESInfo = BsonConvert.DeserializeObject<LAESInfo>(_cipher.PDecrypt(remoteAESPackage));
                 _cipher.LoadRemoteAES(remoteAESInfo);
 
-                LPacket rootPacket = new LPacket(_cipher.RemoteAESEncrypt(BsonConvert.SerializeObject(LocalRoot.Local)), LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
+                LPacket rootPacket = new LPacket(_cipher.RemoteAESEncrypt(BsonConvert.SerializeObject(LocalRoot.Local)), LMetadata.HANDSHAKE | LMetadata.ENCRYPTED);
                 SendPacket(rootPacket);
 
                 _ready = true;
@@ -105,22 +106,19 @@ namespace LotusRoot.WComm.TCP
                     {
                         continue;
                     }
-                    if (data.Metadata.HasFlag(LMetadata.FWEB))
+                    byte[] packaged = data.PackagedData;
+                    if (data.Metadata.HasFlag(LMetadata.ENCRYPTED))
                     {
-                        byte[] packaged = data.PackagedData;
-                        if (data.Metadata.HasFlag(LMetadata.ENCRYPTED))
-                        {
-                            packaged = _cipher.LocalAESDecrypt(packaged);
-                        }
-                        try
-                        {
-                            LRequest request = BsonConvert.DeserializeObject<LRequest>(packaged);
-                            _cmdProcessor.Process(request);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error("Unrecognized (possible scary) data in packet " + data.ToString() + " : " + e.Message);
-                        }
+                        packaged = _cipher.LocalAESDecrypt(packaged);
+                    }
+                    try
+                    {
+                        LRequest request = BsonConvert.DeserializeObject<LRequest>(packaged);
+                        _cmdProcessor.ProcessRequest(request);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Unrecognized (possible scary) data in packet " + data.ToString() + " : " + e.Message);
                     }
                 }
                 catch (ObjectDisposedException)

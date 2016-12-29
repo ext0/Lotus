@@ -37,12 +37,14 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
@@ -54,8 +56,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bson\BsonConvert.cs" />
-    <Compile Include="CComm\TCP\CProcessor.cs" />
+    <Compile Include="CComm\TCP\CCommandProcessor.cs" />
     <Compile Include="LComm\Data\LAESInfo.cs" />
+    <Compile Include="LComm\Data\LASyncRequestTracker.cs" />
     <Compile Include="LComm\Data\LCMDProcessor.cs" />
     <Compile Include="LComm\Data\LRequest.cs" />
     <Compile Include="LComm\Data\LPublicKey.cs" />
@@ -78,8 +81,10 @@
     <Compile Include="RComm\Root.cs" />
     <Compile Include="RComm\RRemoteInvokable.cs" />
     <Compile Include="RComm\TCP\RChannel.cs" />
+    <Compile Include="WComm\WCachePolicy.cs" />
     <Compile Include="WComm\TCP\WConnection.cs" />
     <Compile Include="WComm\TCP\WCommandProcessor.cs" />
+    <Compile Include="WComm\WCache.cs" />
     <Compile Include="WComm\WHandler.cs" />
   </ItemGroup>
   <ItemGroup>

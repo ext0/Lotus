@@ -7,18 +7,17 @@ import java.util.Base64;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.undercouch.bson4jackson.BsonFactory;
+public class JSONConvert<T> {
 
-public class BSONConvert<T> {
+	private ObjectMapper mapper = new ObjectMapper(new JsonFactory());
 
-	private ObjectMapper mapper = new ObjectMapper(new BsonFactory());
+	private static Logger LOGGER = Logger.getLogger(JSONConvert.class);
 
-	private static Logger LOGGER = Logger.getLogger(BSONConvert.class);
-
-	public BSONConvert() {
+	public JSONConvert() {
 		mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
 		mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
 				.withFieldVisibility(Visibility.NONE).withGetterVisibility(Visibility.PUBLIC_ONLY)
@@ -30,7 +29,7 @@ public class BSONConvert<T> {
 		try {
 			return mapper.readValue(memoryStream, clazz);
 		} catch (Exception e) {
-			LOGGER.error("Failed to deserialize object from BSON: " + e.getMessage());
+			LOGGER.error("Failed to deserialize object from JSON: " + e.getMessage());
 			return null;
 		}
 	}
@@ -41,7 +40,7 @@ public class BSONConvert<T> {
 			mapper.writeValue(memoryStream, obj);
 			return memoryStream.toByteArray();
 		} catch (Exception e) {
-			LOGGER.error("Failed to serialize object to BSON: " + e.getMessage());
+			LOGGER.error("Failed to serialize object to JSON: " + e.getMessage());
 			return null;
 		}
 	}

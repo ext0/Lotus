@@ -60,9 +60,14 @@ public class LCipher {
 			random.nextBytes(key);
 
 			SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+			
+			byte[] iv = new byte[16];
+			random.nextBytes(iv);
+			
+			IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
 			_localSymmetricCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-			_localSymmetricCipher.init(Cipher.ENCRYPT_MODE, keySpec);
+			_localSymmetricCipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
 
 			_localAESInfo = new LAESInfo(Base64.getEncoder().encodeToString(_localSymmetricCipher.getIV()),
 					Base64.getEncoder().encodeToString(key));
@@ -72,6 +77,14 @@ public class LCipher {
 			return false;
 		}
 
+	}
+	
+	public static void loadRemoteAESInfo(LAESInfo info) throws InvalidKeyException, InvalidAlgorithmParameterException,
+			NoSuchAlgorithmException, NoSuchPaddingException {
+		IvParameterSpec ivSpec = new IvParameterSpec(Base64.getDecoder().decode(info.getIV()));
+		SecretKeySpec skeySpec = new SecretKeySpec(Base64.getDecoder().decode(info.getKey()), "AES");
+		_remoteSymmetricCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+		_remoteSymmetricCipher.init(Cipher.ENCRYPT_MODE, skeySpec, ivSpec);
 	}
 
 	public static boolean generateAssymmetricCipher() {
@@ -97,21 +110,13 @@ public class LCipher {
 		}
 	}
 
-	public static void loadRemoteAESInfo(LAESInfo info) throws InvalidKeyException, InvalidAlgorithmParameterException,
-			NoSuchAlgorithmException, NoSuchPaddingException {
-		IvParameterSpec ivSpec = new IvParameterSpec(Base64.getDecoder().decode(info.getIV()));
-		SecretKeySpec skeySpec = new SecretKeySpec(Base64.getDecoder().decode(info.getKey()), "AES");
-		_remoteSymmetricCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-		_remoteSymmetricCipher.init(Cipher.DECRYPT_MODE, skeySpec, ivSpec);
-	}
-
-	public static byte[] localAESEncrypt(byte[] data) throws IllegalBlockSizeException, BadPaddingException {
+	public static byte[] localAESDecrypt(byte[] data) throws IllegalBlockSizeException, BadPaddingException {
 
 		byte[] cipherData = _localSymmetricCipher.doFinal(data);
 		return cipherData;
 	}
 
-	public static byte[] remoteAESDecrypt(byte[] data) throws IllegalBlockSizeException, BadPaddingException {
+	public static byte[] remoteAESEncrypt(byte[] data) throws IllegalBlockSizeException, BadPaddingException {
 		byte[] cipherData = _remoteSymmetricCipher.doFinal(data);
 		return cipherData;
 	}

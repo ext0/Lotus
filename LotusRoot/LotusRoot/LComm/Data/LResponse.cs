@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +11,21 @@ namespace LotusRoot.LComm.Data
     {
         private String _response;
         private String _data;
+        private String _id;
+
+        [JsonConstructor]
+        public LResponse(String response, String data, String id)
+        {
+            _response = response;
+            _data = data;
+            _id = id;
+        }
 
         public LResponse(String response, String data)
         {
             _response = response;
             _data = data;
+            _id = Guid.NewGuid().ToString();
         }
 
         public String Response
@@ -31,6 +42,19 @@ namespace LotusRoot.LComm.Data
             {
                 return _data;
             }
+        }
+
+        public String ID
+        {
+            get
+            {
+                return _id;
+            }
+        }
+
+        public void OverwriteData(String data)
+        {
+            _data = data;
         }
     }
 }

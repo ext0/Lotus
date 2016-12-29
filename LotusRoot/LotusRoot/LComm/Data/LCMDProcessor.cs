@@ -8,6 +8,8 @@ namespace LotusRoot.LComm.Data
 {
     public interface ILCMDProcessor
     {
-        void Process(LRequest request);
+        void ProcessResponse(LResponse response);
+
+        void ProcessRequest(LRequest request);
     }
 }

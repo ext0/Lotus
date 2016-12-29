@@ -48,8 +48,8 @@ namespace LotusRoot.WComm
             foreach (CThumbprint thumbprint in RClientStore.LocalThumbprints)
             {
                 String base64thumbprint = Convert.ToBase64String(BsonConvert.SerializeObject(thumbprint));
-                LRequest request = new LRequest(null, "ADDCTHUMB", base64thumbprint);
-                _connection.SendRequest(request, LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
+                LRequest request = new LRequest(null, "ADDCTHUMB", false, base64thumbprint);
+                _connection.SendRequest(request, LMetadata.NOTHING);
             }
         }
 
@@ -62,6 +62,8 @@ namespace LotusRoot.WComm
             Timer poller = new Timer(new TimerCallback(_connection.PollConnection));
             poller.Change(0, WConnection.HEARTBEAT_POLL_TIME);
             ThreadPool.QueueUserWorkItem(_connection.KeepOpen, null);
+
+            Logger.Info("Successfully connected to web server!");
         }
 
         public static void Reconnect()

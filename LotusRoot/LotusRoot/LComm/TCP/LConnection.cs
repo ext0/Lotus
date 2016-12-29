@@ -1,4 +1,5 @@
-﻿using LotusRoot.Bson;
+﻿using log4net;
+using LotusRoot.Bson;
 using LotusRoot.LComm.Data;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace LotusRoot.LComm.TCP
         public static readonly int RESPONSE_BUFFER_SIZE = 1024;
         public static readonly int HEARTBEAT_POLL_TIME = 1000 * 30;
 
+        private ILog Logger = LogManager.GetLogger(typeof(LConnection));
+
         protected TcpClient _client;
         protected NetworkStream _stream;
         protected LCipher _cipher;
@@ -22,6 +25,8 @@ namespace LotusRoot.LComm.TCP
         protected bool _open;
         protected ILCMDProcessor _cmdProcessor;
         protected bool _ready;
+
+        protected LASyncRequestTracker _tracker;
 
         public bool IsConnected
         {
@@ -56,6 +61,14 @@ namespace LotusRoot.LComm.TCP
             }
         }
 
+        public LASyncRequestTracker Tracker
+        {
+            get
+            {
+                return _tracker;
+            }
+        }
+
         public void OpenStream()
         {
             _stream = _client.GetStream();
@@ -65,11 +78,30 @@ namespace LotusRoot.LComm.TCP
         {
             byte[] data = BsonConvert.SerializeObject(request);
             byte[] encrypted = _cipher.RemoteAESEncrypt(data);
-            LPacket packet = new LPacket(encrypted, metadata);
+            LPacket packet = new LPacket(encrypted, metadata | LMetadata.ENCRYPTED | LMetadata.REQUEST);
             SendPacket(packet);
         }
 
-        public void SendPacket(LPacket packet)
+        public void SendResponse(LResponse response, LMetadata metadata)
+        {
+            byte[] data = BsonConvert.SerializeObject(response);
+            byte[] encrypted = _cipher.RemoteAESEncrypt(data);
+            LPacket packet = new LPacket(encrypted, metadata | LMetadata.ENCRYPTED | LMetadata.RESPONSE);
+            SendPacket(packet);
+        }
+
+        public void SendCallbackRequest(LRequest request, LMetadata metadata, Action<LResponse> callback)
+        {
+            if (!request.ASyncCallback)
+            {
+                Logger.Error("Tried to send callback-supported request with a LRequest object marked without the ASyncCallback flag! Call will NOT fire.");
+                return;
+            }
+            _tracker.AddLRequest(request, callback);
+            SendRequest(request, metadata);
+        }
+
+        protected void SendPacket(LPacket packet)
         {
             _stream.Write(packet.Packet, 0, packet.PacketLength);
         }

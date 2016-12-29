@@ -1,5 +1,6 @@
 ﻿using log4net;
 using LotusRoot.CComm.CData;
+using LotusRoot.CComm.TCP;
 using LotusRoot.RComm;
 using System;
 using System.Collections.Generic;
@@ -16,16 +17,19 @@ namespace LotusRoot.Datastore
 
         private static Dictionary<Root, List<CThumbprint>> _thumbprints = new Dictionary<Root, List<CThumbprint>>();
 
-        public static void AddLocalCThumbprint(CThumbprint thumbprint)
+        private static List<CConnection> _localConnections = new List<CConnection>();
+
+        public static void AddLocalCThumbprint(CConnection connection)
         {
             if (!_thumbprints.ContainsKey(LocalRoot.Local))
             {
                 _thumbprints.Add(LocalRoot.Local, new List<CThumbprint>());
             }
-            if (!_thumbprints[LocalRoot.Local].Contains(thumbprint))
+            if (!_thumbprints[LocalRoot.Local].Contains(connection.Thumbprint))
             {
-                Logger.Debug("Local CThumbprint added (" + thumbprint.CIdentifier + ")!");
-                _thumbprints[LocalRoot.Local].Add(thumbprint);
+                Logger.Debug("Local CThumbprint added (" + connection.Thumbprint.CIdentifier + ")!");
+                _thumbprints[LocalRoot.Local].Add(connection.Thumbprint);
+                _localConnections.Add(connection);
             }
         }
 
@@ -47,6 +51,15 @@ namespace LotusRoot.Datastore
             if (_thumbprints.ContainsKey(LocalRoot.Local))
             {
                 bool success = _thumbprints[LocalRoot.Local].Remove(thumbprint);
+                CConnection connection = _localConnections.Where((x) => { return x.Thumbprint.Equals(thumbprint); }).FirstOrDefault();
+                if (connection == null)
+                {
+                    Logger.Warn("Tried to remove nonexistant local CConnection!");
+                }
+                else
+                {
+                    _localConnections.Remove(connection);
+                }
                 if (success)
                 {
                     Logger.Debug("Removed local CThumbprint (" + thumbprint.CIdentifier + ")");
@@ -56,6 +69,11 @@ namespace LotusRoot.Datastore
                     Logger.Warn("Tried to remove nonexistant local CThumbprint (" + thumbprint.CIdentifier + ")");
                 }
             }
+        }
+
+        public static CConnection GetConnectionFromCIdentifier(String identifier)
+        {
+            return _localConnections.Where((x) => { return x.Thumbprint.CIdentifier.Equals(identifier); }).FirstOrDefault();
         }
 
         public static void RemoveRemoteCThumbprint(Root root, CThumbprint thumbprint)
@@ -74,7 +92,7 @@ namespace LotusRoot.Datastore
             }
         }
 
-        public static Root FindRootFromCThumbprint(String identifier)
+        public static Root FindRootFromCIdentifier(String identifier)
         {
             foreach (KeyValuePair<Root, List<CThumbprint>> thumbprints in _thumbprints)
             {

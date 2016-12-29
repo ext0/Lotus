@@ -77,13 +77,13 @@ namespace LotusRoot.CComm.TCP
                 processor.Thumbprint.UpdateHeartbeat();
                 processor.Thumbprint.CIP = client.Client.RemoteEndPoint.ToString();
                 Logger.Debug("Client (" + client.Client.RemoteEndPoint.ToString() + ") handshake completed (" + processor.Thumbprint.CIdentifier + ")");
-                RClientStore.AddLocalCThumbprint(processor.Thumbprint);
+                RClientStore.AddLocalCThumbprint(processor);
 
                 if (WHandler.WConnection != null && WHandler.WConnection.Ready)
                 {
                     String base64thumbprint = Convert.ToBase64String(BsonConvert.SerializeObject(processor.Thumbprint));
-                    LRequest request = new LRequest(null, "ADDCTHUMB", base64thumbprint);
-                    WHandler.WConnection.SendRequest(request, LMetadata.FROOT | LMetadata.TWEB | LMetadata.ENCRYPTED);
+                    LRequest request = new LRequest(null, "ADDCTHUMB", false, base64thumbprint);
+                    WHandler.WConnection.SendRequest(request, LMetadata.NOTHING);
                 }
 
                 foreach (Root root in RHandler.LiveRoots)

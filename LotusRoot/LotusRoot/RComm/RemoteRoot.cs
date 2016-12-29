@@ -27,7 +27,7 @@ namespace LotusRoot.RComm
 
         public Root FindCConnection(String identifier)
         {
-            return RClientStore.FindRootFromCThumbprint(identifier);
+            return RClientStore.FindRootFromCIdentifier(identifier);
         }
 
         public void NotifyCConnection(Root root, CThumbprint thumbprint)

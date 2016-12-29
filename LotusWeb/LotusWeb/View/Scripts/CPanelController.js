@@ -40,11 +40,17 @@
         }
     ];
     var dataStream = $websocket("ws://localhost:8888/COP");
+
+    $scope.Cthumbs = [];
     dataStream.onMessage(function (message) {
         var data = message.data;
         var response = angular.fromJson(data);
-        var content = angular.fromJson(response.Data);
-        console.log(content);
+        if (response.Response === "GETCTHUMBS") {
+            $scope.Cthumbs = angular.fromJson(response.Data);
+        } else if (response.Response === "CGETDRIVES") {
+            var content = angular.fromJson(response.Data);
+        }
+        console.log(response);
     });
 
     $scope.buildRequest = function (command) {
