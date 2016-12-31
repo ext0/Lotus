@@ -32,6 +32,11 @@
     content-type="text/html">
   </resource>
   <resource
+    path="Templates/Overview"
+    location="LotusWeb.View.Templates.Overview.html"
+    content-type="text/html">
+  </resource>
+  <resource
     path="404"
     location="LotusWeb.View.404.html"
     content-type="text/html"
@@ -55,6 +60,11 @@
   <resource
     path="Scripts/Bootstrapper.js"
     location="LotusWeb.View.Scripts.Bootstrapper.js"
+    content-type="application/javascript">
+  </resource>  
+  <resource
+    path="Scripts/Directives.js"
+    location="LotusWeb.View.Scripts.Directives.js"
     content-type="application/javascript">
   </resource>
   <resource
@@ -110,6 +120,11 @@
   <resource
     path="Styles/metro-colors.css"
     location="LotusWeb.View.Styles.metro-colors.css"
+    content-type="text/css">
+  </resource>
+  <resource
+    path="Styles/Custom.css"
+    location="LotusWeb.View.Styles.Custom.css"
     content-type="text/css">
   </resource>
   <resource

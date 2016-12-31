@@ -22,15 +22,17 @@ namespace LotusWeb.Resources
             @"<link rel='stylesheet' href='Styles/metro.css' />
     <link rel='stylesheet' href='Styles/metro-icons.css' />
     <link rel='stylesheet' href='Styles/metro-colors.css' />
-    <link rel='stylesheet' href='Styles/metro-schemes.css' />";
+    <link rel='stylesheet' href='Styles/metro-schemes.css' />
+    <link rel='stylesheet' href='Styles/Custom.css' />";
         private String _baseJS =
             @"<script src='Scripts/Lib/jquery.js'></script>
     <script src='Scripts/Lib/metro.js'></script>
     <script src='Scripts/Lib/angular.js'></script>
     <script src='Scripts/Lib/angular-cookies.js'></script>
     <script src='Scripts/Lib/angular-websocket.js'></script>
+    <script src='Scripts/Lib/angular-uuid.js'></script>
     <script src='Scripts/Bootstrapper.js'></script>
-    <script src='Scripts/Lib/angular-uuid.js'></script>";
+    <script src='Scripts/Directives.js'></script>";
 
 
         private String _favicon =

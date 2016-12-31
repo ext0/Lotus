@@ -52,6 +52,11 @@ namespace LotusRoot.WComm
             return _cache.Get(identifier);
         }
 
+        public static bool HasCachedValue(String identifier)
+        {
+            return _cache.Contains(identifier);
+        }
+
         public static bool InvalidateCachedValue(String identifier)
         {
             return (_cache.Remove(identifier) != null);

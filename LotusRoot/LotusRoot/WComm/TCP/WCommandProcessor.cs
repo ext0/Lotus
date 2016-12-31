@@ -26,6 +26,11 @@ namespace LotusRoot.WComm.TCP
             if (request.Command.Equals("CGETDRIVES"))
             {
                 String cIdentifier = request.Parameters[0];
+                if (WCache.HasCachedValue(cIdentifier + request.Command))
+                {
+                    LResponse cached = (LResponse)WCache.GetCachedValue(cIdentifier + request.Command);
+                    _connection.SendResponse(cached, LMetadata.NOTHING);
+                }
                 CConnection connection = RClientStore.GetConnectionFromCIdentifier(cIdentifier);
                 if (connection == null)
                 {
@@ -34,6 +39,7 @@ namespace LotusRoot.WComm.TCP
                 }
                 connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
                 {
+                    WCache.CacheValue(cIdentifier + request.Command, response, WCachePolicy.NORMAL);
                     _connection.SendResponse(response, LMetadata.NOTHING);
                 });
             }

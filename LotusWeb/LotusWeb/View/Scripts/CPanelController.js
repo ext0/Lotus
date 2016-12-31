@@ -81,6 +81,12 @@
         var request = $scope.buildRequest("GETCTHUMBS");
         $scope.sendRequest(request, function (result) {
             $scope.Cthumbs = result;
+            for (var thumb of result) {
+                var built = $scope.buildRequest("CGETDRIVES", thumb.CIdentifier);
+                $scope.sendRequest(built, function (result) {
+                    console.log(result);
+                });
+            }
         });
     };
 

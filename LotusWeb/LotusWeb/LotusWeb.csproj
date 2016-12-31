@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="Controllers\COPController.cs" />
     <Compile Include="Controllers\CPanelController.cs" />
+    <Compile Include="Controllers\DirectiveController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LogoutController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -181,6 +182,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="View\404.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Templates\Overview.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Scripts\Directives.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Styles\Custom.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

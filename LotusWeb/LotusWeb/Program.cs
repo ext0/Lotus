@@ -35,6 +35,7 @@ namespace LotusWeb
             server.AddController(typeof(LoginController));
             server.AddController(typeof(CPanelController));
             server.AddController(typeof(COPController));
+            server.AddController(typeof(DirectiveController));
 
             server.Run();
             Logger.Info("Webserver live!");
@@ -57,7 +58,7 @@ namespace LotusWeb
 
         public static void ErrorHandler(Object sender, SaneErrorEventArgs e)
         {
-            Logger.Error("Unexpected error - " + e.Exception.Message);
+            Logger.Error("Unexpected error - " + e.Exception.Message + e.Exception.StackTrace);
             e.Propogate = false;
         }
     }
