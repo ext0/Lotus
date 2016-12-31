@@ -56,5 +56,10 @@ namespace LotusRoot.LComm.Data
         {
             _data = data;
         }
+
+        public void OverwriteID(String id)
+        {
+            _id = id;
+        }
     }
 }

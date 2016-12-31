@@ -33,7 +33,7 @@ namespace LotusWeb.WebSockets
             {
                 List<CThumbprint> thumbprints = WClientStore.GetThumbprintsFromAuth(authentication).ToList();
                 LResponse response = new LResponse("GETCTHUMBS", Utility.serializeObjectToJSON(thumbprints));
-                _server.SendLResponse(response);
+                _server.SendLResponse(response, request);
             }
             else if (request.Command.Equals("CGETDRIVES"))
             {
@@ -43,7 +43,7 @@ namespace LotusWeb.WebSockets
                 connection.SendCallbackRequest(lRequest, LMetadata.NOTHING, (response) =>
                 {
                     response.OverwriteData(Encoding.UTF8.GetString(Convert.FromBase64String(response.Data)));
-                    _server.SendLResponse(response);
+                    _server.SendLResponse(response, request);
                 });
             }
         }

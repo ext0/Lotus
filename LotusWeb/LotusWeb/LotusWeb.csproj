@@ -114,6 +114,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="View\Fonts\metro.woff" />
+    <EmbeddedResource Include="View\Fonts\metro.ttf" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\ViewStructure.xml">
@@ -151,10 +153,34 @@
     <EmbeddedResource Include="View\Images\Lotus.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="View\Scripts\Lib\" />
+    <EmbeddedResource Include="View\Scripts\Lib\angular-websocket.js" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Scripts\Lib\angular-uuid.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Scripts\Lib\angular-cookies.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Scripts\Lib\angular.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Scripts\Lib\metro.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Scripts\Lib\jquery.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Styles\metro-colors.css" />
+    <EmbeddedResource Include="View\Styles\metro-icons.css" />
+    <EmbeddedResource Include="View\Styles\metro-schemes.css" />
+    <EmbeddedResource Include="View\Styles\metro.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\404.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

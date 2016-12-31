@@ -19,17 +19,18 @@ namespace LotusWeb.Resources
         }
 
         private String _baseCSS =
-            @"<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/metro/3.0.15/css/metro.min.css' integrity='sha256-Q1aD5UMkyhGDgaqSt4Kv+KWrguNCUfBTCjxrRFZ93og=' crossorigin='anonymous' />
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/metro/3.0.15/css/metro-icons.min.css' integrity='sha256-4AD0T1jQitS9EvDjeSO/IN/Qo2OTEhM3OJGHhlD4Y4c=' crossorigin='anonymous' />
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/metro/3.0.15/css/metro-colors.min.css' integrity='sha256-uh59KumXhgIszhqkzZ2kuC9QsxqvRTCZWvvcHBA1Cwo=' crossorigin='anonymous' />
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/metro/3.0.15/css/metro-schemes.min.css' integrity='sha256-MV9AvlAQ0DLjfbeGuZe/raxv4BUfLsQB5aguHKbY13o=' crossorigin='anonymous' />";
+            @"<link rel='stylesheet' href='Styles/metro.css' />
+    <link rel='stylesheet' href='Styles/metro-icons.css' />
+    <link rel='stylesheet' href='Styles/metro-colors.css' />
+    <link rel='stylesheet' href='Styles/metro-schemes.css' />";
         private String _baseJS =
-            @"<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js' integrity='sha256-IFHWFEbU2/+wNycDECKgjIRSirRNIDp2acEB5fvdVRU=' crossorigin='anonymous'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/metro/3.0.15/js/metro.min.js' integrity='sha256-Ayh8EvZTSK75RoDZvFCfrQ8X5CcTA8Y/qsqtZLaylnM=' crossorigin='anonymous'></script>
-    <script src='https://opensource.keycdn.com/angularjs/1.5.8/angular.min.js' integrity='sha384-V6/dyDFv85/V/Ktq3ez5B80/c9ZY7jV9c/319rqwNOz3h9CIPdd2Eve0UQBYMMr/' crossorigin='anonymous'></script>
-    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js'></script>
-    <script src='https://cdn.rawgit.com/AngularClass/angular-websocket/v2.0.0/dist/angular-websocket.min.js'></script>
-    <script src='Scripts/Bootstrapper.js'></script>";
+            @"<script src='Scripts/Lib/jquery.js'></script>
+    <script src='Scripts/Lib/metro.js'></script>
+    <script src='Scripts/Lib/angular.js'></script>
+    <script src='Scripts/Lib/angular-cookies.js'></script>
+    <script src='Scripts/Lib/angular-websocket.js'></script>
+    <script src='Scripts/Bootstrapper.js'></script>
+    <script src='Scripts/Lib/angular-uuid.js'></script>";
 
 
         private String _favicon =

@@ -32,6 +32,12 @@
     content-type="text/html">
   </resource>
   <resource
+    path="404"
+    location="LotusWeb.View.404.html"
+    content-type="text/html"
+    situational="404">
+  </resource>
+  <resource
     path="Scripts/RegisterController.js"
     location="LotusWeb.View.Scripts.RegisterController.js"
     content-type="application/javascript">
@@ -50,5 +56,70 @@
     path="Scripts/Bootstrapper.js"
     location="LotusWeb.View.Scripts.Bootstrapper.js"
     content-type="application/javascript">
+  </resource>
+  <resource
+    path="Scripts/Lib/angular-uuid.js"
+    location="LotusWeb.View.Scripts.Lib.angular-uuid.js"
+    content-type="application/javascript">
+  </resource>
+  <resource
+    path="Scripts/Lib/angular-websocket.js"
+    location="LotusWeb.View.Scripts.Lib.angular-websocket.js"
+    content-type="application/javascript">
+  </resource>
+  <resource
+    path="Scripts/Lib/angular-cookies.js"
+    location="LotusWeb.View.Scripts.Lib.angular-cookies.js"
+    content-type="application/javascript">
+  </resource>
+  <resource
+    path="Scripts/Lib/angular.js"
+    location="LotusWeb.View.Scripts.Lib.angular.js"
+    content-type="application/javascript">
+  </resource>
+  <resource
+    path="Scripts/Lib/metro.js"
+    location="LotusWeb.View.Scripts.Lib.metro.js"
+    content-type="application/javascript">
+  </resource>
+  <resource
+    path="Scripts/Lib/jquery.js"
+    location="LotusWeb.View.Scripts.Lib.jquery.js"
+    content-type="application/javascript">
+  </resource>
+  <resource
+    path="Scripts/Lib/jquery.js"
+    location="LotusWeb.View.Scripts.Lib.jquery.js"
+    content-type="application/javascript">
+  </resource>
+  <resource
+    path="Styles/metro.css"
+    location="LotusWeb.View.Styles.metro.css"
+    content-type="text/css">
+  </resource>
+  <resource
+    path="Styles/metro-icons.css"
+    location="LotusWeb.View.Styles.metro-icons.css"
+    content-type="text/css">
+  </resource>
+  <resource
+    path="Styles/metro-schemes.css"
+    location="LotusWeb.View.Styles.metro-schemes.css"
+    content-type="text/css">
+  </resource>
+  <resource
+    path="Styles/metro-colors.css"
+    location="LotusWeb.View.Styles.metro-colors.css"
+    content-type="text/css">
+  </resource>
+  <resource
+    path="fonts/metro.woff"
+    location="LotusWeb.View.Fonts.metro.woff"
+    content-type="application/font-woff">
+  </resource>
+  <resource
+    path="fonts/metro.ttf"
+    location="LotusWeb.View.Fonts.metro.ttf"
+    content-type="application/font-sfnt">
   </resource>
 </view>

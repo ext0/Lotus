@@ -1,6 +1,7 @@
-﻿lotus.controller("CPanelController", ["$scope", "$http", "$window", "$cookies", "$websocket", function ($scope, $http, $window, $cookies, $websocket) {
+﻿lotus.controller("CPanelController", ["$scope", "$http", "$window", "$cookies", "$websocket", "uuid", function ($scope, $http, $window, $cookies, $websocket, uuid) {
     if (!$scope.authenticated) {
-        console.log("Not authenticated!");
+        console.log("WARN: Not authenticated!");
+        $window.location.href = "/Login";
     }
     $scope.sidebar = [
         {
@@ -42,15 +43,19 @@
     var dataStream = $websocket("ws://localhost:8888/COP");
 
     $scope.Cthumbs = [];
+    var requests = {};
+
     dataStream.onMessage(function (message) {
         var data = message.data;
         var response = angular.fromJson(data);
-        if (response.Response === "GETCTHUMBS") {
-            $scope.Cthumbs = angular.fromJson(response.Data);
-        } else if (response.Response === "CGETDRIVES") {
-            var content = angular.fromJson(response.Data);
+        for (var request in requests) {
+            if (request === response.ID) {
+                requests[request](angular.fromJson(response.Data));
+                delete requests[request];
+                return;
+            }
         }
-        console.log(response);
+        console.log("WARN: unknown response id: " + response.ID);
     });
 
     $scope.buildRequest = function (command) {
@@ -58,15 +63,25 @@
         for (var i = 1; i < arguments.length; i++) {
             parameters.push(arguments[i]);
         }
-        return angular.toJson({
+        var request = {
+            ID: uuid.v4(),
             Auth: $cookies.get("LOTUS_SESSION_ID"),
             Command: command,
             Parameters: parameters
-        });
+        };
+        return request;
     };
 
+    $scope.sendRequest = function (request, callback) {
+        requests[request.ID] = callback;
+        dataStream.send(angular.toJson(request));
+    }
+
     $scope.getClientList = function () {
-        dataStream.send($scope.buildRequest("GETCTHUMBS"));
+        var request = $scope.buildRequest("GETCTHUMBS");
+        $scope.sendRequest(request, function (result) {
+            $scope.Cthumbs = result;
+        });
     };
 
     $scope.getClientList();
