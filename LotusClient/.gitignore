@@ -51,3 +51,4 @@ local.properties
 .recommenders/
 
 target/
+logs/
