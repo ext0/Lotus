@@ -3,3 +3,9 @@
         templateUrl: '/Templates/Overview'
     };
 });
+
+lotus.directive('allClients', function () {
+    return {
+        templateUrl: '/Templates/AllClients'
+    };
+});

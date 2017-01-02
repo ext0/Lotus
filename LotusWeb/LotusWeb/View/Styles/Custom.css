@@ -1,1 +1,11 @@
-﻿
+﻿.white-background {
+    background-color: #f7f7f7 !important;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.hover-row:hover {
+    background-color: #eeeeee;
+}

@@ -37,6 +37,11 @@
     content-type="text/html">
   </resource>
   <resource
+    path="Templates/AllClients"
+    location="LotusWeb.View.Templates.AllClients.html"
+    content-type="text/html">
+  </resource>
+  <resource
     path="404"
     location="LotusWeb.View.404.html"
     content-type="text/html"

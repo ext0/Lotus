@@ -1,0 +1,73 @@
+﻿<h1 class="text-light" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
+    data-hint="All Clients|Displays all clients that have been connected and registered to this account.">
+    All Clients
+</h1>
+<hr class="thin bg-red" />
+<div class="flex-grid">
+    <div class="row cells">
+        <div class="cell size8 padding5">
+            <div class="panel bg-grayLighter">
+                <div class="heading bg-gray">
+                    <span class="icon mif-display bg-darkGray"></span>
+                    <span class="title" data-role="hint" data-hint-background="bg-gray" data-hint-color="fg-white" data-hint-mode="3"
+                          data-hint="Client List|Shows all of the currently active clients">Client List</span>
+                </div>
+                <div class="content white-background">
+                    <table class="dataTable border bordered no-footer white-background" role="grid">
+                        <thead>
+                            <tr role="row">
+                                <td class="sortable-column sorting" style="width: 100px" tabindex="0" rowspan="1" colspan="1">Machine name</td>
+                                <td class="sortable-column sorting" style="width: 40px" tabindex="0" rowspan="1" colspan="1">IP</td>
+                                <td class="sortable-column sorting" style="width: 40px" tabindex="0" rowspan="1" colspan="1">Client Version</td>
+                                <td class="sortable-column sorting" style="width: 20px" tabindex="0" rowspan="1" colspan="1">Connected</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr role="row" ng-repeat="thumbprint in Cthumbs" class="hover-row clickable" ng-click="clientSelect('AllClients', thumbprint)">
+                                <td>{{thumbprint.Hostname}}</td>
+                                <td>{{thumbprint.CIP.substring(0, thumbprint.CIP.indexOf(":"))}}</td>
+                                <td>{{thumbprint.CVersion}}</td>
+                                <td class="align-center"><span class="mif-checkmark fg-green"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="cell size4 padding5">
+            <div class="panel bg-grayLighter">
+                <div class="heading bg-red">
+                    <span class="icon mif-display bg-darkRed"></span>
+                    <span class="title" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
+                          data-hint="Client|Summary of the client and links to more panels">Client{{(selected['AllClients'] != null) ? ' ('+selected['AllClients'].Hostname+')' : ''}}</span>
+                </div>
+                <div class="content bg-grayLighter" ng-show="selected['AllClients'] != null">
+                    <a class="shortcut-button">
+                        <span class="icon mif-wifi-connect"></span>
+                        <span class="title">Connect</span>
+                    </a>
+                    <a class="shortcut-button">
+                        <span class="icon mif-earth"></span>
+                        <span class="title">Map</span>
+                    </a>
+                    <a class="shortcut-button">
+                        <span class="icon mif-user"></span>
+                        <span class="title">Log off</span>
+                    </a>
+                    <a class="shortcut-button">
+                        <span class="icon mif-settings-power"></span>
+                        <span class="title">Restart</span>
+                    </a>
+                    <a class="shortcut-button">
+                        <span class="icon mif-power-cord"></span>
+                        <span class="title">Shutdown</span>
+                    </a>
+                    <a class="shortcut-button bg-red fg-white">
+                        <span class="icon mif-cross"></span>
+                        <span class="title">Remove</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

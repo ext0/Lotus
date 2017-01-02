@@ -35,9 +35,9 @@ namespace LotusWeb.WebSockets
             Logger.Info("Opened!");
         }
 
-        public void SendLResponse(LResponse response, LRequest original)
+        public void SendLResponse(LRequest request, LResponse response)
         {
-            response.OverwriteID(original.ID);
+            response.OverwriteID(request.ID);
             Send(Utility.serializeObjectToJSON(response));
         }
 

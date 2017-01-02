@@ -43,6 +43,7 @@
     var dataStream = $websocket("ws://localhost:8888/COP");
 
     $scope.Cthumbs = [];
+    $scope.selected = {};
     var requests = {};
 
     dataStream.onMessage(function (message) {
@@ -57,6 +58,10 @@
         }
         console.log("WARN: unknown response id: " + response.ID);
     });
+
+    $scope.clientSelect = function (section, client) {
+        $scope.selected[section] = client;
+    }
 
     $scope.buildRequest = function (command) {
         var parameters = [];
