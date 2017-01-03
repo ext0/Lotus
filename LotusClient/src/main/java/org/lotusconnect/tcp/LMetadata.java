@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public enum LMetadata {
-	ENCRYPTED, HEARTBEAT, REQUEST, RESPONSE, PLACEHOLDER0, PLACEHOLDER1, HANDSHAKE, NOTHING;
+	ENCRYPTED, HEARTBEAT, REQUEST, RESPONSE, PLACEHOLDER0, CACHE_HIT, HANDSHAKE, NOTHING;
 
 	public static final EnumSet<LMetadata> ALL_OPTS = EnumSet.allOf(LMetadata.class);
 

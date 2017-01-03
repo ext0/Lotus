@@ -3,65 +3,35 @@
         console.log("WARN: Not authenticated!");
         $window.location.href = "/Login";
     }
-    $scope.sidebar = [
-        {
-            title: "overview",
-            caption: "",
-            icon: "mif-apps"
-        },
-        {
-            title: "all clients",
-            caption: "0 clients",
-            icon: "mif-stack"
-        },
-        {
-            title: "live clients",
-            caption: "0 online",
-            icon: "mif-layers"
-        },
-        {
-            title: "offline clients",
-            caption: "0 offline",
-            icon: "mif-layers-clear"
-        },
-        {
-            title: "plugins",
-            caption: "0 plugins available",
-            icon: "mif-versions"
-        },
-        {
-            title: "world map",
-            caption: "",
-            icon: "mif-earth"
-        },
-        {
-            title: "configuration",
-            caption: "",
-            icon: "mif-cogs"
-        }
-    ];
-    var dataStream = $websocket("ws://localhost:8888/COP");
 
     $scope.Cthumbs = [];
     $scope.selected = {};
     var requests = {};
+
+    /*
+        COMMUNICATION SYSTEM (WEBSOCKET)
+    */
+
+    var dataStream = $websocket("ws://localhost:8888/COP");
 
     dataStream.onMessage(function (message) {
         var data = message.data;
         var response = angular.fromJson(data);
         for (var request in requests) {
             if (request === response.ID) {
-                requests[request](angular.fromJson(response.Data));
+                var text = null;
+                try {
+                    text = angular.fromJson(response.Data);
+                } catch (e) {
+                    text = response.Data;
+                }
+                requests[request](text);
                 delete requests[request];
                 return;
             }
         }
         console.log("WARN: unknown response id: " + response.ID);
     });
-
-    $scope.clientSelect = function (section, client) {
-        $scope.selected[section] = client;
-    }
 
     $scope.buildRequest = function (command) {
         var parameters = [];
@@ -82,6 +52,11 @@
         dataStream.send(angular.toJson(request));
     }
 
+    $scope.sendClientRequest = function (thumb, request, callback) {
+        var built = $scope.buildRequest(request, thumb.CIdentifier);
+        $scope.sendRequest(built, callback);
+    };
+
     $scope.getClientList = function () {
         var request = $scope.buildRequest("GETCTHUMBS");
         $scope.sendRequest(request, function (result) {
@@ -97,8 +72,92 @@
 
     $scope.getClientList();
 
+    /*
+        TAB SYSTEM
+    */
+
+    $scope.sidebar = [
+    {
+        title: "overview",
+        caption: "",
+        icon: "mif-apps"
+    },
+    {
+        title: "all clients",
+        caption: "0 clients",
+        icon: "mif-stack"
+    },
+    {
+        title: "live clients",
+        caption: "0 online",
+        icon: "mif-layers"
+    },
+    {
+        title: "offline clients",
+        caption: "0 offline",
+        icon: "mif-layers-clear"
+    },
+    {
+        title: "plugins",
+        caption: "0 plugins available",
+        icon: "mif-versions"
+    },
+    {
+        title: "world map",
+        caption: "",
+        icon: "mif-earth"
+    },
+    {
+        title: "configuration",
+        caption: "",
+        icon: "mif-cogs"
+    }
+    ];
+
     $scope.activeTab = $scope.sidebar[0];
+
     $scope.sidebarClick = function (tab) {
         $scope.activeTab = tab;
+    };
+
+    /*
+        CLIENT CONTROL
+    */
+
+    $scope.clientSelect = function (section, client) {
+        $scope.selected[section] = client;
+    }
+
+    $scope.clientLogoff = function () {
+        var select = $scope.selected['AllClients'];
+        $scope.sendClientRequest(select, 'CLOGOFF', function (result) {
+            $.Notify({
+                caption: "Logoff command sent",
+                content: "Successful command execution",
+                type: 'info'
+            });
+        });
+    };
+
+    $scope.clientShutdown = function () {
+        var select = $scope.selected['AllClients'];
+        $scope.sendClientRequest(select, 'CSHUTDOWN', function (result) {
+            $.Notify({
+                caption: "Shutdown command sent",
+                content: "Successful command execution",
+                type: 'info'
+            });
+        });
+    };
+
+    $scope.clientRestart = function () {
+        var select = $scope.selected['AllClients'];
+        $scope.sendClientRequest(select, 'CRESTART', function (result) {
+            $.Notify({
+                caption: "Restart command sent",
+                content: "Successful command execution",
+                type: 'info'
+            });
+        });
     };
 }]);

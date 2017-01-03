@@ -14,7 +14,7 @@ namespace LotusRoot.LComm.Data
         REQUEST = 4,
         RESPONSE = 8,
         PLACEHOLDER0 = 16,
-        PLACEHOLDER1 = 32,
+        CACHE_HIT = 32,
         HANDSHAKE = 64,
         NOTHING = 128
     }
