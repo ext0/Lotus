@@ -40,7 +40,6 @@ namespace LotusWeb.Controllers
                 String hash = HashPassword(password, salt);
                 using (UserContext db = new UserContext())
                 {
-                    Logger.Info("Hello 2!");
                     bool emailExists = db.Users.Where(x => x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase)).Count() != 0;
                     if (emailExists)
                     {
