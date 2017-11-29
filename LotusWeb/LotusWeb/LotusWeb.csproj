@@ -70,7 +70,7 @@
       <HintPath>..\..\LotusRoot\LotusRoot\bin\Debug\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SaneWeb">
-      <HintPath>D:\Source\Repos\SaneWeb2\SaneWeb\bin\Debug\SaneWeb.dll</HintPath>
+      <HintPath>..\Dependencies\SaneWeb\SaneWeb.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />

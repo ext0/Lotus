@@ -77,6 +77,11 @@ namespace LotusWeb.Data.Contexts
 
     public class UserContext : DbContext
     {
+        public UserContext() : base("Lotus")
+        {
+
+        }
+
         public DbSet<User> Users { get; set; }
         public DbSet<User.UserLoginSession> Sessions { get; set; }
         public DbSet<User.UserLoginAttempt> Attempts { get; set; }

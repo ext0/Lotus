@@ -11,11 +11,11 @@ namespace LotusRoot.RComm
     public class Root
     {
         private String _endpoint;
-        private short[] _cports;
-        private short _rport;
+        private ushort[] _cports;
+        private ushort _rport;
         private String _identifier;
 
-        public Root(String endpoint, short[] cports, short rport, String identifier)
+        public Root(String endpoint, ushort[] cports, ushort rport, String identifier)
         {
             _endpoint = endpoint;
             _cports = cports;
@@ -31,7 +31,7 @@ namespace LotusRoot.RComm
             }
         }
 
-        public short[] CPorts
+        public ushort[] CPorts
         {
             get
             {
@@ -43,7 +43,7 @@ namespace LotusRoot.RComm
             }
         }
 
-        public short RPort
+        public ushort RPort
         {
             get
             {

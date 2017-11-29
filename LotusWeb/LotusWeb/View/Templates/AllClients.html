@@ -1,6 +1,6 @@
 ﻿<h1 class="text-light" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
-    data-hint="All Clients|Displays all clients that have been connected and registered to this account.">
-    All Clients
+    data-hint="Clients|Displays all clients that have been connected and registered to this account.">
+    Clients
 </h1>
 <hr class="thin bg-red" />
 <div class="flex-grid">
@@ -23,7 +23,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr role="row" ng-repeat="thumbprint in Cthumbs" class="hover-row clickable" ng-click="clientSelect('AllClients', thumbprint)">
+                            <tr role="row" ng-repeat="thumbprint in Cthumbs" class="hover-row clickable" ng-click="clientSelect('Clients', thumbprint)">
                                 <td>{{thumbprint.Hostname}}</td>
                                 <td>{{thumbprint.CIP.substring(0, thumbprint.CIP.indexOf(":"))}}</td>
                                 <td>{{thumbprint.CVersion}}</td>

@@ -15,7 +15,7 @@ namespace LotusRoot.RComm
 
         Root FindCConnection(String identifier);
 
-        short[] GetCPorts();
+        ushort[] GetCPorts();
 
         void NotifyCConnection(Root root, CThumbprint thumbprint);
 

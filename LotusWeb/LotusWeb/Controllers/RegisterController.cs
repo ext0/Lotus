@@ -14,11 +14,14 @@ using static BCrypt.Net.BCrypt;
 using LotusWeb.Data.Contexts;
 using LotusWeb.Logic.Communication;
 using LotusWeb.Logic.Crypto;
+using log4net;
 
 namespace LotusWeb.Controllers
 {
     public static class RegisterController
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(RegisterController));
+
         [DataBoundView("/Register")]
         public static Object Register(HttpListenerContext context)
         {
@@ -37,6 +40,7 @@ namespace LotusWeb.Controllers
                 String hash = HashPassword(password, salt);
                 using (UserContext db = new UserContext())
                 {
+                    Logger.Info("Hello 2!");
                     bool emailExists = db.Users.Where(x => x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase)).Count() != 0;
                     if (emailExists)
                     {

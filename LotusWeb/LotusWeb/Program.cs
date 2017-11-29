@@ -19,7 +19,7 @@ namespace LotusWeb
     class Program
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Program));
-        private static readonly short RLISTENER_PORT = 12581;
+        private static readonly ushort RLISTENER_PORT = 12581;
 
         static void Main(string[] args)
         {
@@ -40,7 +40,7 @@ namespace LotusWeb
             server.Run();
             Logger.Info("Webserver live!");
 
-            RListener.Initialize(12581);
+            RListener.Initialize(RLISTENER_PORT);
             RListener.Bind();
             RListener.Start();
 

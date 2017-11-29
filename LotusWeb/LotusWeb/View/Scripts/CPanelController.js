@@ -83,19 +83,9 @@
         icon: "mif-apps"
     },
     {
-        title: "all clients",
+        title: "clients",
         caption: "0 clients",
         icon: "mif-stack"
-    },
-    {
-        title: "live clients",
-        caption: "0 online",
-        icon: "mif-layers"
-    },
-    {
-        title: "offline clients",
-        caption: "0 offline",
-        icon: "mif-layers-clear"
     },
     {
         title: "plugins",
@@ -129,7 +119,7 @@
     }
 
     $scope.clientLogoff = function () {
-        var select = $scope.selected['AllClients'];
+        var select = $scope.selected['Clients'];
         $scope.sendClientRequest(select, 'CLOGOFF', function (result) {
             $.Notify({
                 caption: "Logoff command sent",
@@ -140,7 +130,7 @@
     };
 
     $scope.clientShutdown = function () {
-        var select = $scope.selected['AllClients'];
+        var select = $scope.selected['Clients'];
         $scope.sendClientRequest(select, 'CSHUTDOWN', function (result) {
             $.Notify({
                 caption: "Shutdown command sent",
@@ -151,7 +141,7 @@
     };
 
     $scope.clientRestart = function () {
-        var select = $scope.selected['AllClients'];
+        var select = $scope.selected['Clients'];
         $scope.sendClientRequest(select, 'CRESTART', function (result) {
             $.Notify({
                 caption: "Restart command sent",

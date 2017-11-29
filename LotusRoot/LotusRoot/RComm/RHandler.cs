@@ -107,9 +107,9 @@ namespace LotusRoot.RComm
             }
         }
 
-        public static void RegisterRoot(String IP, short rport)
+        public static void RegisterRoot(String IP, ushort rport)
         {
-            if (!_roots.TryAdd(new Root(IP, new short[] { }, rport, String.Empty), RootStatus.REGISTERED))
+            if (!_roots.TryAdd(new Root(IP, new ushort[] { }, rport, String.Empty), RootStatus.REGISTERED))
             {
                 throw new Exception("Failed to add Root due to concurrency issue!");
             }

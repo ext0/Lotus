@@ -20,7 +20,7 @@ namespace LotusRoot.RComm
             return LocalRoot.Local.Identifier;
         }
 
-        public short[] GetCPorts()
+        public ushort[] GetCPorts()
         {
             return LocalRoot.Local.CPorts;
         }

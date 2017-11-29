@@ -18,7 +18,7 @@ namespace LotusWeb.Logic.RComm
         public static readonly int MAX_PENDING_TCP_BACKLOG = int.MaxValue;
         public static readonly int ALIVE_POLL_TIME = 1000 * 30;
 
-        private static short _port;
+        private static ushort _port;
         private static TcpListener _listener;
         private static bool _listening;
 
@@ -30,7 +30,7 @@ namespace LotusWeb.Logic.RComm
             }
         }
 
-        public static void Initialize(short port)
+        public static void Initialize(ushort port)
         {
             _port = port;
             _listener = new TcpListener(IPAddress.Parse("0.0.0.0"), _port);

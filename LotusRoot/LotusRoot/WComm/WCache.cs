@@ -17,10 +17,10 @@ namespace LotusRoot.WComm
         static WCache()
         {
             _shortTermPolicy = new CacheItemPolicy();
-            _shortTermPolicy.AbsoluteExpiration = DateTime.Now.AddSeconds(10);
+            _shortTermPolicy.AbsoluteExpiration = DateTime.Now.AddSeconds(1);
 
             _normalPolicy = new CacheItemPolicy();
-            _normalPolicy.AbsoluteExpiration = DateTime.Now.AddSeconds(30);
+            _normalPolicy.AbsoluteExpiration = DateTime.Now.AddSeconds(10);
 
             _longTermPolicy = new CacheItemPolicy();
             _longTermPolicy.AbsoluteExpiration = DateTime.Now.AddSeconds(300);

@@ -11,15 +11,15 @@ namespace LotusRoot.Configuration
         public class RootEntry
         {
             public String IP { get; set; }
-            public short RPort { get; set; }
+            public ushort RPort { get; set; }
         }
 
         public RootEntry[] Roots { get; set; }
-        public short LocalRPort { get; set; }
+        public ushort LocalRPort { get; set; }
         public String LocalExternalIP { get; set; }
-        public short[] LocalCPorts { get; set; }
+        public ushort[] LocalCPorts { get; set; }
         public String LocalIdentifier { get; set; }
         public String RemoteWebHost { get; set; }
-        public short RemoteWebHostPort { get; set; }
+        public ushort RemoteWebHostPort { get; set; }
     }
 }

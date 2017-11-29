@@ -1,0 +1,14 @@
+{
+	"roots": [
+		{
+			"ip": "192.168.2.7",
+			"rport": 48901
+		}
+	],
+	"localrport": 48901,
+	"localexternalip": "192.168.2.8",
+	"localcports": [ 8888 ],
+	"localidentifier": "Athena",
+	"remotewebhost": "192.168.2.2",
+	"remotewebhostport": 12581
+}
