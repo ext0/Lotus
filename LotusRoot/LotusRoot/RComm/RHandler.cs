@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LotusRoot.RComm
@@ -23,11 +24,19 @@ namespace LotusRoot.RComm
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RHandler));
 
+        public static readonly int BEACON_POLL_TIME = 1000 * 60;
+
         private static ConcurrentDictionary<Root, RootStatus> _roots = new ConcurrentDictionary<Root, RootStatus>();
         private static TimeSpan _rootCacheDead = TimeSpan.FromMinutes(1d);
         private static DateTime _lastRootQuery = DateTime.MinValue;
 
-        public static void UpdateRoots()
+        public static void BootstrapRootBeacon()
+        {
+            Timer poller = new Timer(new TimerCallback((state) => UpdateRoots()));
+            poller.Change(0, RHandler.BEACON_POLL_TIME);
+        }
+
+        private static void UpdateRoots()
         {
             if (_lastRootQuery.Add(_rootCacheDead) < DateTime.Now)
             {
@@ -44,6 +53,14 @@ namespace LotusRoot.RComm
                         {
                             RClientStore.AddRemoteCThumbprint(root, thumbprint);
                         }
+                        if (!_roots.ContainsKey(root))
+                        {
+                            Logger.Info("Successfully connected to foreign root " + root.Identifier + " (" + root.Endpoint.ToString() + ":" + root.RPort + ")");
+                        }
+                        else if (_roots.ContainsKey(root) && _roots[root] == RootStatus.DEAD)
+                        {
+                            Logger.Info("Successfully reconnected to foreign root " + root.Identifier + " (" + root.Endpoint.ToString() + ":" + root.RPort + ")");
+                        }
                         live.Add(root);
                     }
                     catch (Exception e)
@@ -52,7 +69,6 @@ namespace LotusRoot.RComm
                         dead.Add(root);
                     }
                 }
-                _roots.Clear();
                 foreach (Root alive in live)
                 {
                     _roots[alive] = RootStatus.LIVE;
@@ -112,6 +128,10 @@ namespace LotusRoot.RComm
             if (!_roots.TryAdd(new Root(IP, new ushort[] { }, rport, String.Empty), RootStatus.REGISTERED))
             {
                 throw new Exception("Failed to add Root due to concurrency issue!");
+            }
+            else
+            {
+                Logger.Info("Registered new config root (" + IP + ":" + rport + ")");
             }
         }
     }

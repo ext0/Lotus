@@ -93,6 +93,12 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y "$(ProjectDir)bin\Debug\log4net.dll" "C:\Users\Patrick\Share\LotusRoot"
+xcopy /Y "$(ProjectDir)bin\Debug\LotusRoot.exe" "C:\Users\Patrick\Share\LotusRoot"
+xcopy /Y "$(ProjectDir)bin\Debug\Newtonsoft.Json.dll" "C:\Users\Patrick\Share\LotusRoot"
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

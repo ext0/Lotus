@@ -60,7 +60,7 @@ namespace LotusRoot
                 Logger.Info("Bound to CPort " + cport);
             }
 
-            RHandler.UpdateRoots();
+            RHandler.BootstrapRootBeacon();
 
             WHandler.ConnectToWebServer();
             WHandler.Start();
