@@ -9,8 +9,8 @@ import org.lotusconnect.tcp.RConnection;
 
 public class Program {
 
-	public static final int APPLICATION_VERSION = 1;
-	public static final String AUTH = "d615412bcc73ad661ca2ab73f69b4482";
+	public static final int APPLICATION_VERSION = 2;
+	public static final String AUTH = "3b82fa6f6d6dacc813d98287433586cd";
 
 	private static final Logger LOGGER = Logger.getLogger(Program.class);
 
@@ -30,7 +30,7 @@ public class Program {
 		}
 
 		LOGGER.info("Attempting to open connection...");
-		RConnection connection = new RConnection("192.168.1.28", 25321);
+		RConnection connection = new RConnection("192.168.2.8", 12581);
 		while (!attemptConnection(connection)) {
 			try {
 				Thread.sleep(1000);
