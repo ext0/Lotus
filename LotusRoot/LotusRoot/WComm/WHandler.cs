@@ -17,7 +17,7 @@ namespace LotusRoot.WComm
     public static class WHandler
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(WHandler));
-        private static readonly int WEB_RETRY_TIME = 1000 * 30;
+        private static readonly int WEB_RETRY_TIME = 1000;
 
         private static WConnection _connection = null;
 

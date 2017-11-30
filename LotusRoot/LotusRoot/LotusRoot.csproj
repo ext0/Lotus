@@ -69,6 +69,8 @@
     <Compile Include="LComm\Data\LPacket.cs" />
     <Compile Include="CComm\TCP\CConnection.cs" />
     <Compile Include="LComm\Data\LResponse.cs" />
+    <Compile Include="LComm\Data\LRootThumbprintStore.cs" />
+    <Compile Include="LComm\Data\LRootThumprintKeyPair.cs" />
     <Compile Include="LComm\TCP\LConnection.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Configuration\ConfigLoader.cs" />

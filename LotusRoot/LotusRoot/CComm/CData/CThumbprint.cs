@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,8 +17,9 @@ namespace LotusRoot.CComm.CData
         private DateTime _lastheartbeat;
         private String _auth;
         private String _hostname;
+        private bool _active;
 
-        public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth, String hostname)
+        public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth, String hostname, bool active)
         {
             _cidentifier = cIdentifier;
             _cversion = cVersion;
@@ -25,6 +27,7 @@ namespace LotusRoot.CComm.CData
             _lastheartbeat = DateTime.MinValue;
             _auth = auth;
             _hostname = hostname;
+            _active = active;
         }
 
         public String Auth
@@ -84,6 +87,18 @@ namespace LotusRoot.CComm.CData
             set
             {
                 _hostname = value;
+            }
+        }
+
+        public bool Active
+        {
+            get
+            {
+                return _active;
+            }
+            set
+            {
+                _active = value;
             }
         }
 

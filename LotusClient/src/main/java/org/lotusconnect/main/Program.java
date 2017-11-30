@@ -30,7 +30,7 @@ public class Program {
 		}
 
 		LOGGER.info("Attempting to open connection...");
-		RConnection connection = new RConnection("192.168.2.8", 12581);
+		RConnection connection = new RConnection("192.168.2.8", 8888);
 		while (!attemptConnection(connection)) {
 			try {
 				Thread.sleep(1000);

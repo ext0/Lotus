@@ -20,6 +20,14 @@ namespace LotusRoot.Configuration
             return Config;
         }
 
+        public static bool IsConfigReady
+        {
+            get
+            {
+                return _config != null;
+            }
+        }
+
         public static Config Config
         {
             get

@@ -76,7 +76,9 @@ namespace LotusRoot.CComm.TCP
                 }
                 processor.Thumbprint.UpdateHeartbeat();
                 processor.Thumbprint.CIP = client.Client.RemoteEndPoint.ToString();
+
                 Logger.Debug("Client (" + client.Client.RemoteEndPoint.ToString() + ") handshake completed (" + processor.Thumbprint.CIdentifier + ")");
+
                 RClientStore.AddLocalCThumbprint(processor);
 
                 if (WHandler.WConnection != null && WHandler.WConnection.Ready)

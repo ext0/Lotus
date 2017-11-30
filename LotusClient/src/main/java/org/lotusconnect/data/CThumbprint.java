@@ -47,6 +47,7 @@ public class CThumbprint {
 		this._auth = auth;
 	}
 
+
 	public String getHostname() {
 		return _hostname;
 	}

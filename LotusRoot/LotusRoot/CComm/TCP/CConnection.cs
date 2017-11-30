@@ -67,6 +67,7 @@ namespace LotusRoot.CComm.TCP
                 byte[] packaged = packet.PackagedData;
                 byte[] decrypted = _cipher.LocalAESDecrypt(packaged);
                 _thumbprint = BsonConvert.DeserializeObject<CThumbprint>(decrypted);
+                _thumbprint.Active = true;
 
                 _ready = true;
 
@@ -160,12 +161,15 @@ namespace LotusRoot.CComm.TCP
             {
                 Logger.Info("Could not forcifully kill CConnection (" + Thumbprint.CIdentifier + "), connection already forcibly closed.");
             }
-            RClientStore.RemoveLocalCThumbprint(Thumbprint);
+
+            _ready = false;
+
+            RClientStore.DisableLocalCThumbprint(_thumbprint);
 
             if (WHandler.WConnection != null && WHandler.WConnection.Ready)
             {
                 String base64thumbprint = Convert.ToBase64String(BsonConvert.SerializeObject(Thumbprint));
-                LRequest request = new LRequest(null, "REMOVECTHUMB", false, base64thumbprint);
+                LRequest request = new LRequest(null, "DROPCTHUMB", false, base64thumbprint);
                 WHandler.WConnection.SendRequest(request, LMetadata.NOTHING);
             }
 

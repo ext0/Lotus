@@ -22,25 +22,44 @@ namespace LotusWeb.Data
             {
                 _thumbprints.Add(root, new List<CThumbprint>());
             }
-            if (!_thumbprints[root].Contains(thumbprint))
+
+            CThumbprint exists = _thumbprints[root].Where((x) => x.Equals(thumbprint)).FirstOrDefault();
+            if (exists != null)
             {
-                Logger.Debug("CThumbprint added (" + thumbprint.CIdentifier + ")!");
+                exists.Active = true;
+                Logger.Debug("CThumbprint reactivated (" + thumbprint.CIdentifier + ")!");
+            }
+            else
+            {
                 _thumbprints[root].Add(thumbprint);
+                Logger.Debug("CThumbprint added (" + thumbprint.CIdentifier + ")!");
             }
         }
 
-        public static void RemoveCThumbprint(Root root, CThumbprint thumbprint)
+        public static void DisableCThumbprint(Root root, CThumbprint thumbprint)
         {
             if (_thumbprints.ContainsKey(root))
             {
-                bool success = _thumbprints[root].Remove(thumbprint);
-                if (success)
+                CThumbprint disabling = _thumbprints[root].Where((x) => x.Equals(thumbprint)).FirstOrDefault();
+                if (disabling != null)
                 {
-                    Logger.Debug("Removed CThumbprint (" + thumbprint.CIdentifier + ")");
+                    disabling.Active = false;
+                    Logger.Debug("Disabled CThumbprint (" + thumbprint.CIdentifier + ")");
                 }
                 else
                 {
-                    Logger.Warn("Tried to remove nonexistant CThumbprint (" + thumbprint.CIdentifier + ")");
+                    Logger.Warn("Tried to disable nonexistant CThumbprint (" + thumbprint.CIdentifier + ")");
+                }
+            }
+        }
+
+        public static void DisableAllCThumbprints(Root root)
+        {
+            if (_thumbprints.ContainsKey(root))
+            {
+                foreach (CThumbprint thumbprint in _thumbprints[root])
+                {
+                    thumbprint.Active = false;
                 }
             }
         }

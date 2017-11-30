@@ -32,11 +32,11 @@ namespace LotusWeb.Logic.RComm
                 CThumbprint thumbprint = BsonConvert.DeserializeObject<CThumbprint>(data);
                 WClientStore.AddCThumbprint(_connection.Root, thumbprint);
             }
-            else if (request.Command.Equals("REMOVECTHUMB"))
+            else if (request.Command.Equals("DROPCTHUMB"))
             {
                 byte[] data = Convert.FromBase64String(request.Parameters[0]);
                 CThumbprint thumbprint = BsonConvert.DeserializeObject<CThumbprint>(data);
-                WClientStore.RemoveCThumbprint(_connection.Root, thumbprint);
+                WClientStore.DisableCThumbprint(_connection.Root, thumbprint);
             }
         }
 

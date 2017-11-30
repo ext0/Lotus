@@ -21,5 +21,6 @@ namespace LotusRoot.Configuration
         public String LocalIdentifier { get; set; }
         public String RemoteWebHost { get; set; }
         public ushort RemoteWebHostPort { get; set; }
+        public String CThumbprintStoreFilePath { get; set; }
     }
 }

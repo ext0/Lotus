@@ -42,7 +42,7 @@ namespace LotusRoot.RComm
 
         public void NotifyCDrop(Root root, CThumbprint thumbprint)
         {
-            RClientStore.RemoveRemoteCThumbprint(root, thumbprint);
+            RClientStore.DisableRemoteCThumbprint(root, thumbprint);
         }
     }
 }

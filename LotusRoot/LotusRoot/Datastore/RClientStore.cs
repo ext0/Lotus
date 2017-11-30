@@ -1,10 +1,14 @@
 ﻿using log4net;
+using LotusRoot.Bson;
 using LotusRoot.CComm.CData;
 using LotusRoot.CComm.TCP;
+using LotusRoot.Configuration;
+using LotusRoot.LComm.Data;
 using LotusRoot.RComm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,58 +19,107 @@ namespace LotusRoot.Datastore
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RClientStore));
 
-        private static Dictionary<Root, List<CThumbprint>> _thumbprints = new Dictionary<Root, List<CThumbprint>>();
+        private static LRootThumbprintStore _thumbprints = new LRootThumbprintStore();
 
         private static List<CConnection> _localConnections = new List<CConnection>();
 
+        public static void SaveCThumbprintStore()
+        {
+            LRootThumbprintStore copy = BsonConvert.DeserializeObject<LRootThumbprintStore>(BsonConvert.SerializeObject(_thumbprints));
+            foreach (LRootThumbprintKeyPair keyPair in copy.Thumbprints)
+            {
+                foreach (CThumbprint thumbprint in keyPair.Thumbprints)
+                {
+                    thumbprint.Active = false;
+                }
+            }
+            File.WriteAllBytes(ConfigLoader.Config.CThumbprintStoreFilePath, BsonConvert.SerializeObject(copy));
+            Logger.Debug("Saved CThumbprintStore successfully!");
+        }
+
+        public static void LoadCThumbprintStore()
+        {
+            if (!File.Exists(ConfigLoader.Config.CThumbprintStoreFilePath))
+            {
+                Logger.Warn("No CThumbprintStore file found at " + ConfigLoader.Config.CThumbprintStoreFilePath + " (if this is a new root, ignore this warning)");
+                return;
+            }
+            byte[] data = File.ReadAllBytes(ConfigLoader.Config.CThumbprintStoreFilePath);
+            _thumbprints = BsonConvert.DeserializeObject<LRootThumbprintStore>(data);
+            Logger.Debug("Loaded CThumbprintStore successfully!");
+        }
+
         public static void AddLocalCThumbprint(CConnection connection)
         {
-            if (!_thumbprints.ContainsKey(LocalRoot.Local))
+            if (!_thumbprints.ThumbprintStoreContains(LocalRoot.Local))
             {
-                _thumbprints.Add(LocalRoot.Local, new List<CThumbprint>());
+                _thumbprints.AddRootThumbprint(LocalRoot.Local);
             }
-            if (!_thumbprints[LocalRoot.Local].Contains(connection.Thumbprint))
+            CThumbprint exists = _thumbprints.GetKeyPair(LocalRoot.Local).Thumbprints.Where((x) => x.Equals(connection.Thumbprint)).FirstOrDefault();
+
+            if (exists != null)
+            {
+                Logger.Debug("Local CThumbprint reactivated (" + connection.Thumbprint.CIdentifier + ")!");
+                exists.Active = true;
+            }
+            else
             {
                 Logger.Debug("Local CThumbprint added (" + connection.Thumbprint.CIdentifier + ")!");
-                _thumbprints[LocalRoot.Local].Add(connection.Thumbprint);
+                _thumbprints.GetKeyPair(LocalRoot.Local).Thumbprints.Add(connection.Thumbprint);
+            }
+            if (!_localConnections.Contains(connection))
+            {
                 _localConnections.Add(connection);
             }
+
+            SaveCThumbprintStore();
         }
 
         public static void AddRemoteCThumbprint(Root root, CThumbprint thumbprint)
         {
-            if (!_thumbprints.ContainsKey(root))
+            if (!_thumbprints.ThumbprintStoreContains(root))
             {
-                _thumbprints.Add(root, new List<CThumbprint>());
+                _thumbprints.AddRootThumbprint(root);
             }
-            if (!_thumbprints[root].Contains(thumbprint))
+            CThumbprint exists = _thumbprints.GetKeyPair(root).Thumbprints.Where((x) => x.Equals(thumbprint)).FirstOrDefault();
+
+            if (exists != null)
+            {
+                Logger.Debug("Remote CThumbprint reactivated (" + thumbprint.CIdentifier + ")!");
+                exists.Active = true;
+            }
+            else
             {
                 Logger.Debug("Remote CThumbprint added (" + thumbprint.CIdentifier + ")!");
-                _thumbprints[root].Add(thumbprint);
+                _thumbprints.GetKeyPair(root).Thumbprints.Add(thumbprint);
             }
+
+            SaveCThumbprintStore();
         }
 
-        public static void RemoveLocalCThumbprint(CThumbprint thumbprint)
+        public static void DisableLocalCThumbprint(CThumbprint thumbprint)
         {
-            if (_thumbprints.ContainsKey(LocalRoot.Local))
+            CConnection connection = _localConnections.Where((x) => { return x.Thumbprint.Equals(thumbprint); }).FirstOrDefault();
+            if (connection == null)
             {
-                bool success = _thumbprints[LocalRoot.Local].Remove(thumbprint);
-                CConnection connection = _localConnections.Where((x) => { return x.Thumbprint.Equals(thumbprint); }).FirstOrDefault();
-                if (connection == null)
+                Logger.Warn("Tried to remove nonexistant local CConnection!");
+            }
+            else
+            {
+                _localConnections.Remove(connection);
+            }
+
+            if (_thumbprints.ThumbprintStoreContains(LocalRoot.Local))
+            {
+                CThumbprint disabling = _thumbprints.GetKeyPair(LocalRoot.Local).Thumbprints.Where((x) => x.Equals(thumbprint)).FirstOrDefault();
+                if (disabling != null)
                 {
-                    Logger.Warn("Tried to remove nonexistant local CConnection!");
+                    disabling.Active = false;
+                    Logger.Debug("Disabled local CThumbprint (" + thumbprint.CIdentifier + ")");
                 }
                 else
                 {
-                    _localConnections.Remove(connection);
-                }
-                if (success)
-                {
-                    Logger.Debug("Removed local CThumbprint (" + thumbprint.CIdentifier + ")");
-                }
-                else
-                {
-                    Logger.Warn("Tried to remove nonexistant local CThumbprint (" + thumbprint.CIdentifier + ")");
+                    Logger.Warn("Tried to disable nonexistant local CThumbprint (" + thumbprint.CIdentifier + ")");
                 }
             }
         }
@@ -76,44 +129,35 @@ namespace LotusRoot.Datastore
             return _localConnections.Where((x) => { return x.Thumbprint.CIdentifier.Equals(identifier); }).FirstOrDefault();
         }
 
-        public static void RemoveRemoteCThumbprint(Root root, CThumbprint thumbprint)
+        public static void DisableRemoteCThumbprint(Root root, CThumbprint thumbprint)
         {
-            if (_thumbprints.ContainsKey(root))
+            if (_thumbprints.ThumbprintStoreContains(root))
             {
-                bool success = _thumbprints[root].Remove(thumbprint);
-                if (success)
+                CThumbprint disabling = _thumbprints.GetKeyPair(root).Thumbprints.Where((x) => x.Equals(thumbprint)).FirstOrDefault();
+                if (disabling != null)
                 {
-                    Logger.Debug("Removed remote CThumbprint (" + thumbprint.CIdentifier + ")");
+                    disabling.Active = false;
+                    Logger.Debug("Disabled CThumbprint (" + thumbprint.CIdentifier + ")");
                 }
                 else
                 {
-                    Logger.Warn("Tried to remove nonexistant remote CThumbprint (" + thumbprint.CIdentifier + ")");
+                    Logger.Warn("Tried to disable nonexistant CThumbprint (" + thumbprint.CIdentifier + ")");
                 }
             }
         }
 
         public static Root FindRootFromCIdentifier(String identifier)
         {
-            foreach (KeyValuePair<Root, List<CThumbprint>> thumbprints in _thumbprints)
-            {
-                foreach (CThumbprint loop in thumbprints.Value)
-                {
-                    if (loop.CIdentifier.Equals(identifier))
-                    {
-                        return thumbprints.Key;
-                    }
-                }
-            }
-            return null;
+            return _thumbprints.GetRootFromIdentifier(identifier);
         }
 
         public static List<CThumbprint> LocalThumbprints
         {
             get
             {
-                if (_thumbprints.ContainsKey(LocalRoot.Local))
+                if (_thumbprints.ThumbprintStoreContains(LocalRoot.Local))
                 {
-                    return _thumbprints[LocalRoot.Local];
+                    return _thumbprints.GetKeyPair(LocalRoot.Local).Thumbprints;
                 }
                 else
                 {

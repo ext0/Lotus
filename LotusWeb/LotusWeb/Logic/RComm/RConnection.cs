@@ -157,6 +157,7 @@ namespace LotusWeb.Logic.RComm
                 Logger.Info("Could not forcifully kill RConnection (" + _root.Identifier + "), connection already forcibly closed.");
             }
             WRootStore.RemoveRoot(_root);
+            WClientStore.DisableAllCThumbprints(_root);
         }
     }
 }

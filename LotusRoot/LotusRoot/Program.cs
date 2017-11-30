@@ -38,6 +38,8 @@ namespace LotusRoot
 
             Config config = ConfigLoader.Load();
 
+            RClientStore.LoadCThumbprintStore();
+
             LocalRoot.Local = new Root(config.LocalExternalIP, config.LocalCPorts, config.LocalRPort, config.LocalIdentifier);
             Logger.Info("Configuration loaded!");
 
