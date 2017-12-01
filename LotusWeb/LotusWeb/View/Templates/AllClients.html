@@ -5,67 +5,62 @@
 <hr class="thin bg-red" />
 <div class="flex-grid">
     <div class="row cells">
-        <div class="cell size8 padding5">
+        <div class="cell size3 padding5">
             <div class="panel bg-grayLighter">
                 <div class="heading bg-gray">
                     <span class="icon mif-display bg-darkGray"></span>
                     <span class="title" data-role="hint" data-hint-background="bg-gray" data-hint-color="fg-white" data-hint-mode="3"
                           data-hint="Client List|Shows all of the currently active clients">Client List</span>
+                    <a class="clickable client-refresh-button mif-fg-white" style="float: right" ng-click="clientRefresh()">
+                        <span class="mif-loop2 fg-white" ng-class="{'mif-ani-pulse': refreshing}"></span>
+                    </a>
                 </div>
                 <div class="content white-background">
                     <table class="dataTable border bordered no-footer white-background" role="grid">
                         <thead>
                             <tr role="row">
-                                <td class="sortable-column sorting" style="width: 100px" tabindex="0" rowspan="1" colspan="1">Machine name</td>
+                                <td class="sortable-column sorting" style="width: 100px" tabindex="0" rowspan="1" colspan="1">Hostname</td>
                                 <td class="sortable-column sorting" style="width: 40px" tabindex="0" rowspan="1" colspan="1">IP</td>
-                                <td class="sortable-column sorting" style="width: 40px" tabindex="0" rowspan="1" colspan="1">Client Version</td>
+                                <td class="sortable-column sorting" style="width: 40px" tabindex="0" rowspan="1" colspan="1">Version</td>
                                 <td class="sortable-column sorting" style="width: 20px" tabindex="0" rowspan="1" colspan="1">Connected</td>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr role="row" ng-repeat="thumbprint in Cthumbs" class="hover-row clickable" ng-click="clientSelect('Clients', thumbprint)">
+                            <tr role="row" ng-repeat="thumbprint in clientStore.cthumbs" class="hover-row clickable" ng-click="clientSelect('Clients', thumbprint)">
                                 <td>{{thumbprint.Hostname}}</td>
                                 <td>{{thumbprint.CIP.substring(0, thumbprint.CIP.indexOf(":"))}}</td>
                                 <td>{{thumbprint.CVersion}}</td>
-                                <td class="align-center"><span class="mif-checkmark fg-green"></span></td>
+                                <td class="align-center">
+                                    <span ng-class="{'mif-cross fg-red': !thumbprint.Active, 'mif-checkmark fg-green': thumbprint.Active}"></span>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="cell size4 padding5">
+        <div class="cell size9 padding5">
             <div class="panel bg-grayLighter">
                 <div class="heading bg-red">
                     <span class="icon mif-display bg-darkRed"></span>
                     <span class="title" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
                           data-hint="Client|Summary of the client and links to more panels">Client{{(selected['AllClients'] != null) ? ' ('+selected['AllClients'].Hostname+')' : ''}}</span>
                 </div>
-                <div class="content bg-grayLighter" ng-show="selected['AllClients'] != null">
-                    <a class="shortcut-button">
-                        <span class="icon mif-wifi-connect"></span>
-                        <span class="title">Connect</span>
-                    </a>
-                    <a class="shortcut-button">
-                        <span class="icon mif-earth"></span>
-                        <span class="title">Map</span>
-                    </a>
-                    <a class="shortcut-button" ng-click="clientLogoff();">
-                        <span class="icon mif-user"></span>
-                        <span class="title">Log off</span>
-                    </a>
-                    <a class="shortcut-button" ng-click="clientRestart();">
-                        <span class="icon mif-settings-power"></span>
-                        <span class="title">Restart</span>
-                    </a>
-                    <a class="shortcut-button" ng-click="clientShutdown();">
-                        <span class="icon mif-power-cord"></span>
-                        <span class="title">Shutdown</span>
-                    </a>
-                    <a class="shortcut-button bg-red fg-white" ng-click="clientUninstall();">
-                        <span class="icon mif-cross"></span>
-                        <span class="title">Remove</span>
-                    </a>
+                <div class="tabcontrol client-tab">
+                    <ul class="tabs">
+                        <li>
+                            <a href="#guid-0000">Kronos</a>
+                        </li>
+                        <li>
+                            <a href="#grid-9999">Zeus</a>
+                        </li>
+                    </ul>
+                    <div class="frames">
+                        <div class="frame client-tab-inner" id="guid-0000">
+                        </div>
+                        <div class="frame client-tab-inner" id="guid-9999">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,76 +1,12 @@
-﻿lotus.controller("CPanelController", ["$scope", "$http", "$window", "$cookies", "$websocket", "uuid", function ($scope, $http, $window, $cookies, $websocket, uuid) {
+﻿lotus.controller("CPanelController", ["$scope", "$http", "$window", "$cookies", "$websocket", "uuid", "ClientStore", function ($scope, $http, $window, $cookies, $websocket, uuid, ClientStore) {
     if (!$scope.authenticated) {
         console.log("WARN: Not authenticated!");
         $window.location.href = "/Login";
+        return;
     }
 
-    $scope.Cthumbs = [];
     $scope.selected = {};
-    var requests = {};
-
-    /*
-        COMMUNICATION SYSTEM (WEBSOCKET)
-    */
-
-    var dataStream = $websocket("ws://localhost:8888/COP");
-
-    dataStream.onMessage(function (message) {
-        var data = message.data;
-        var response = angular.fromJson(data);
-        for (var request in requests) {
-            if (request === response.ID) {
-                var text = null;
-                try {
-                    text = angular.fromJson(response.Data);
-                } catch (e) {
-                    text = response.Data;
-                }
-                requests[request](text);
-                delete requests[request];
-                return;
-            }
-        }
-        console.log("WARN: unknown response id: " + response.ID);
-    });
-
-    $scope.buildRequest = function (command) {
-        var parameters = [];
-        for (var i = 1; i < arguments.length; i++) {
-            parameters.push(arguments[i]);
-        }
-        var request = {
-            ID: uuid.v4(),
-            Auth: $cookies.get("LOTUS_SESSION_ID"),
-            Command: command,
-            Parameters: parameters
-        };
-        return request;
-    };
-
-    $scope.sendRequest = function (request, callback) {
-        requests[request.ID] = callback;
-        dataStream.send(angular.toJson(request));
-    }
-
-    $scope.sendClientRequest = function (thumb, request, callback) {
-        var built = $scope.buildRequest(request, thumb.CIdentifier);
-        $scope.sendRequest(built, callback);
-    };
-
-    $scope.getClientList = function () {
-        var request = $scope.buildRequest("GETCTHUMBS");
-        $scope.sendRequest(request, function (result) {
-            $scope.Cthumbs = result;
-            for (var thumb of result) {
-                var built = $scope.buildRequest("CGETDRIVES", thumb.CIdentifier);
-                $scope.sendRequest(built, function (result) {
-                    console.log(result);
-                });
-            }
-        });
-    };
-
-    $scope.getClientList();
+    $scope.refreshing = false;
 
     /*
         TAB SYSTEM
@@ -114,10 +50,21 @@
         CLIENT CONTROL
     */
 
+    $scope.clientStore = ClientStore;
+
+    ClientStore.updateClientList();
+
     $scope.clientSelect = function (section, client) {
         $scope.selected[section] = client;
     }
 
+    $scope.clientRefresh = function () {
+        $scope.refreshing = true;
+        ClientStore.updateClientList(function () {
+            $scope.refreshing = false;
+        });
+    }
+    /*
     $scope.clientLogoff = function () {
         var select = $scope.selected['Clients'];
         $scope.sendClientRequest(select, 'CLOGOFF', function (result) {
@@ -150,4 +97,5 @@
             });
         });
     };
+    */
 }]);

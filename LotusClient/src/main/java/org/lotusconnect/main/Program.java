@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.lotusconnect.data.LocalConfig;
+import org.lotusconnect.plugin.Responder;
 import org.lotusconnect.tcp.LCipher;
 import org.lotusconnect.tcp.RConnection;
 
@@ -28,7 +29,7 @@ public class Program {
 		if (!assymmetricSuccess) {
 			errorExit();
 		}
-
+		
 		LOGGER.info("Attempting to open connection...");
 		RConnection connection = new RConnection("192.168.2.8", 8888);
 		while (!attemptConnection(connection)) {

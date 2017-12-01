@@ -73,6 +73,11 @@
     content-type="application/javascript">
   </resource>
   <resource
+    path="Scripts/Services/ClientStore.js"
+    location="LotusWeb.View.Scripts.Services.ClientStore.js"
+    content-type="text/html">
+  </resource>
+  <resource
     path="Scripts/Lib/angular-uuid.js"
     location="LotusWeb.View.Scripts.Lib.angular-uuid.js"
     content-type="application/javascript">

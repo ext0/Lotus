@@ -9,3 +9,36 @@
 .hover-row:hover {
     background-color: #eeeeee;
 }
+
+.client-refresh-button {
+    padding-right: 5px;
+}
+
+.client-tab {
+    padding: .625rem 0;
+}
+
+.tabcontrol .tabs li {
+    margin-right: 1px;
+}
+
+.tabcontrol .tabs {
+    border-bottom: 2px #ce352c solid;
+}
+
+.client-tab-inner {
+    background-color: #dcdcdc !important;
+}
+
+.tabcontrol .tabs li a {
+    font: 500 0.875rem/1.1 "Segoe UI","Open Sans",sans-serif,serif;
+    color: white;
+    background-color: #555555;
+    border-radius: 6px 6px 0px 0px;
+    border: #b5b5b5 1px solid;
+    text-transform: initial
+}
+
+.tabcontrol .tabs li:hover a {
+    background-color: #1d1d1d;
+}

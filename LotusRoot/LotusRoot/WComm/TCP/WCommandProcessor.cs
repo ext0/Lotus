@@ -14,18 +14,6 @@ namespace LotusRoot.WComm.TCP
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(WCommandProcessor));
 
-        private static readonly String[] BASIC_NOCACHE_COMMANDS =
-        {
-            "CLOGOFF",
-            "CSHUTDOWN",
-            "CRESTART"
-        };
-
-        private static readonly String[] BASIC_CACHE_COMMANDS =
-        {
-            "CGETDRIVES"
-        };
-
         private WConnection _connection;
 
         public WCommandProcessor(WConnection connection)
@@ -35,6 +23,8 @@ namespace LotusRoot.WComm.TCP
 
         public void ProcessRequest(LRequest request)
         {
+            // come back to this caching shit at some point
+            /*
             foreach (String basicCache in BASIC_CACHE_COMMANDS)
             {
                 if (request.Command.Equals(basicCache))
@@ -59,24 +49,18 @@ namespace LotusRoot.WComm.TCP
                     return;
                 }
             }
-            foreach (String basicNoCache in BASIC_NOCACHE_COMMANDS)
+            */
+            String cIdentifier = request.Parameters[0];
+            CConnection connection = RClientStore.GetConnectionFromCIdentifier(cIdentifier);
+            if (connection == null)
             {
-                if (request.Command.Equals(basicNoCache))
-                {
-                    String cIdentifier = request.Parameters[0];
-                    CConnection connection = RClientStore.GetConnectionFromCIdentifier(cIdentifier);
-                    if (connection == null)
-                    {
-                        Logger.Error("CConnection does not exist for identifier " + cIdentifier + "!");
-                        return;
-                    }
-                    connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
-                    {
-                        _connection.SendResponse(response, LMetadata.NOTHING);
-                    });
-                    return;
-                }
+                Logger.Error("CConnection does not exist for identifier " + cIdentifier + "!");
+                return;
             }
+            connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
+            {
+                _connection.SendResponse(response, LMetadata.NOTHING);
+            });
         }
         public void ProcessResponse(LResponse response)
         {

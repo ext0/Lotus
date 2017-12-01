@@ -19,17 +19,6 @@ namespace LotusWeb.WebSockets
     public class COPProcessor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(COPProcessor));
-        private static readonly String[] BASIC_NOCACHE_COMMANDS =
-        {
-            "CLOGOFF",
-            "CSHUTDOWN",
-            "CRESTART"
-        };
-
-        private static readonly String[] BASIC_CACHE_COMMANDS =
-        {
-
-        };
 
         private COPServer _server;
 
@@ -47,31 +36,17 @@ namespace LotusWeb.WebSockets
                 _server.SendLResponse(request, response);
                 return;
             }
-            else if (request.Command.Equals("CGETDRIVES"))
+            else
             {
                 String cIdentifier = request.Parameters[0];
                 RConnection connection = WClientStore.GetConnectionFromCIdentifier(cIdentifier);
-                LRequest lRequest = new LRequest(authentication, request.Command, true, cIdentifier);
+                LRequest lRequest = new LRequest(authentication, request.Command, true, request.Parameters);
                 connection.SendCallbackRequest(lRequest, LMetadata.NOTHING, (response) =>
                 {
                     response.OverwriteData(Encoding.UTF8.GetString(Convert.FromBase64String(response.Data)));
                     _server.SendLResponse(request, response);
                 });
                 return;
-            }
-            foreach (String basic in BASIC_NOCACHE_COMMANDS)
-            {
-                if (request.Command.Equals(basic))
-                {
-                    String cIdentifier = request.Parameters[0];
-                    RConnection connection = WClientStore.GetConnectionFromCIdentifier(cIdentifier);
-                    LRequest lRequest = new LRequest(authentication, request.Command, true, cIdentifier);
-                    connection.SendCallbackRequest(lRequest, LMetadata.NOTHING, (response) =>
-                    {
-                        _server.SendLResponse(request, response);
-                    });
-                    return;
-                }
             }
         }
     }

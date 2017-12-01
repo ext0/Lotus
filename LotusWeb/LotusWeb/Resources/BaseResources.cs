@@ -32,6 +32,7 @@ namespace LotusWeb.Resources
     <script src='Scripts/Lib/angular-websocket.js'></script>
     <script src='Scripts/Lib/angular-uuid.js'></script>
     <script src='Scripts/Bootstrapper.js'></script>
+    <script src='Scripts/Services/ClientStore.js'></script>
     <script src='Scripts/Directives.js'></script>";
 
 

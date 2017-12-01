@@ -195,6 +195,9 @@
   <ItemGroup>
     <EmbeddedResource Include="View\Templates\AllClients.html" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Scripts\Services\ClientStore.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

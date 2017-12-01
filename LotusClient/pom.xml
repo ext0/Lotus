@@ -2,13 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>Lotus</groupId>
-	<artifactId>Client</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>com.lotusadministration</groupId>
+	<artifactId>lotus-client</artifactId>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 
-	<name>Client</name>
-	<url>http://maven.apache.org</url>
+	<name>Lotus Client</name>
+	<url>http://lotusadministration.com</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,8 +39,20 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<repositories>
+	    <repository>
+	        <id>local-maven-repo</id>
+	        <url>file:///${project.parent.basedir}/local-maven-repo</url>
+	    </repository>
+	</repositories>
 
 	<dependencies>
+		<dependency>
+		    <groupId>com.lotusadministration</groupId>
+		    <artifactId>lotus-plugin</artifactId>
+		    <version>1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
