@@ -36,6 +36,11 @@ namespace LotusWeb.Controllers
                 dynamic registrationRequest = JsonParser.Deserialize(body);
                 String email = registrationRequest.Email.Trim();
                 String password = registrationRequest.Password;
+                if (email == null || email.Length == 0 || password == null || password.Length == 0)
+                {
+                    context.Response.StatusCode = 400;
+                    return new HTTPErrorMessage("Invalid post parameters!");
+                }
                 String salt = GenerateSalt(4);
                 String hash = HashPassword(password, salt);
                 using (UserContext db = new UserContext())

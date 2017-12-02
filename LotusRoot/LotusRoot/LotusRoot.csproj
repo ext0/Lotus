@@ -60,6 +60,7 @@
     <Compile Include="LComm\Data\LAESInfo.cs" />
     <Compile Include="LComm\Data\LASyncRequestTracker.cs" />
     <Compile Include="LComm\Data\LCMDProcessor.cs" />
+    <Compile Include="LComm\Data\LInstalledPlugin.cs" />
     <Compile Include="LComm\Data\LRequest.cs" />
     <Compile Include="LComm\Data\LPublicKey.cs" />
     <Compile Include="CComm\CData\CThumbprint.cs" />

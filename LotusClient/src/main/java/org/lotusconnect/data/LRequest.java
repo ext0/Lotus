@@ -11,15 +11,15 @@ public class LRequest {
 	private String _id;
 
 	private LRequest() {
-		
+
 	}
 
 	public LRequest(String auth, String command, String[] parameters, boolean asyncCallback, String id) {
-		this._auth = auth;
-		this._command = command;
-		this._parameters = parameters;
-		this._asyncCallback = asyncCallback;
-		this._id = id;
+		_auth = auth;
+		_command = command;
+		_parameters = parameters;
+		_asyncCallback = asyncCallback;
+		_id = id;
 	}
 
 	public String getAuth() {
@@ -27,7 +27,7 @@ public class LRequest {
 	}
 
 	public void setAuth(String auth) {
-		this._auth = auth;
+		_auth = auth;
 	}
 
 	public String getCommand() {
@@ -35,7 +35,7 @@ public class LRequest {
 	}
 
 	public void setCommand(String command) {
-		this._command = command;
+		_command = command;
 	}
 
 	public String[] getParameters() {
@@ -43,7 +43,7 @@ public class LRequest {
 	}
 
 	public void setParameters(String[] parameters) {
-		this._parameters = parameters;
+		_parameters = parameters;
 	}
 
 	public boolean isAsyncCallback() {
@@ -51,7 +51,7 @@ public class LRequest {
 	}
 
 	public void setASyncCallback(boolean asyncCallback) {
-		this._asyncCallback = asyncCallback;
+		_asyncCallback = asyncCallback;
 	}
 
 	public String getID() {
@@ -59,6 +59,6 @@ public class LRequest {
 	}
 
 	public void setID(String id) {
-		this._id = id;
+		_id = id;
 	}
 }

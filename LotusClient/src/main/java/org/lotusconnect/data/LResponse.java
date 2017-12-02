@@ -6,9 +6,9 @@ public class LResponse {
 	private String _id;
 
 	private LResponse() {
-		
+
 	}
-	
+
 	public LResponse(String response, String data, String id) {
 		_response = response;
 		_data = data;
@@ -26,7 +26,7 @@ public class LResponse {
 	}
 
 	public void setResponse(String response) {
-		this._response = response;
+		_response = response;
 	}
 
 	public String getData() {
@@ -34,7 +34,7 @@ public class LResponse {
 	}
 
 	public void setData(String data) {
-		this._data = data;
+		_data = data;
 	}
 
 	public String getID() {
@@ -42,7 +42,7 @@ public class LResponse {
 	}
 
 	public void setID(String id) {
-		this._id = id;
+		_id = id;
 	}
 
 }

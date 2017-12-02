@@ -36,6 +36,7 @@ namespace LotusWeb
             server.AddController(typeof(CPanelController));
             server.AddController(typeof(COPController));
             server.AddController(typeof(DirectiveController));
+            server.AddController(typeof(PluginController));
 
             server.Run();
             Logger.Info("Webserver live!");

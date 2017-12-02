@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.lotusconnect.data.LocalConfig;
+import org.lotusconnect.plugin.PluginStore;
 import org.lotusconnect.plugin.Responder;
 import org.lotusconnect.tcp.LCipher;
 import org.lotusconnect.tcp.RConnection;
@@ -12,7 +13,8 @@ public class Program {
 
 	public static final int APPLICATION_VERSION = 2;
 	public static final String AUTH = "3b82fa6f6d6dacc813d98287433586cd";
-
+	public static final String PLUGIN_STORE = "plugins.bin";
+	
 	private static final Logger LOGGER = Logger.getLogger(Program.class);
 
 	public static void main(String[] args) {
@@ -29,6 +31,8 @@ public class Program {
 		if (!assymmetricSuccess) {
 			errorExit();
 		}
+	
+		PluginStore.loadPluginsFromDisk();
 		
 		LOGGER.info("Attempting to open connection...");
 		RConnection connection = new RConnection("192.168.2.8", 8888);

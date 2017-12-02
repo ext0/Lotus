@@ -83,12 +83,12 @@ namespace LotusRoot.Datastore
             }
             CThumbprint exists = _thumbprints.GetKeyPair(root).Thumbprints.Where((x) => x.Equals(thumbprint)).FirstOrDefault();
 
-            if (exists != null)
+            if (exists != null && !exists.Active)
             {
                 Logger.Debug("Remote CThumbprint reactivated (" + thumbprint.CIdentifier + ")!");
                 exists.Active = true;
             }
-            else
+            else if (exists == null)
             {
                 Logger.Debug("Remote CThumbprint added (" + thumbprint.CIdentifier + ")!");
                 _thumbprints.GetKeyPair(root).Thumbprints.Add(thumbprint);
@@ -127,6 +127,55 @@ namespace LotusRoot.Datastore
         public static CConnection GetConnectionFromCIdentifier(String identifier)
         {
             return _localConnections.Where((x) => { return x.Thumbprint.CIdentifier.Equals(identifier); }).FirstOrDefault();
+        }
+
+        public static bool AddInstalledPluginFromCIdentifier(String identifier, LInstalledPlugin installedPlugin)
+        {
+            CConnection connection = GetConnectionFromCIdentifier(identifier);
+
+            if (connection == null)
+            {
+                Logger.Warn("Tried to add installed plugin to nonexistant CThumbprint (" + identifier + ")");
+                return false;
+            }
+
+            List<LInstalledPlugin> installedPlugins = connection.Thumbprint.InstalledPlugins.ToList();
+            LInstalledPlugin plugin = installedPlugins.Where(x => x.Equals(installedPlugin)).FirstOrDefault();
+            if (plugin != null)
+            {
+                plugin.Enabled = true;
+                return true;
+            }
+            else
+            {
+                installedPlugins.Add(installedPlugin);
+                connection.Thumbprint.InstalledPlugins = installedPlugins.ToArray();
+                return true;
+            }
+        }
+
+        public static bool DisableInstalledPluginFromCIdentifier(String identifier, LInstalledPlugin installedPlugin)
+        {
+            CConnection connection = GetConnectionFromCIdentifier(identifier);
+
+            if (connection == null)
+            {
+                Logger.Warn("Tried to add installed plugin to nonexistant CThumbprint (" + identifier + ")");
+                return false;
+            }
+
+            List<LInstalledPlugin> installedPlugins = connection.Thumbprint.InstalledPlugins.ToList();
+            LInstalledPlugin plugin = installedPlugins.Where(x => x.Equals(installedPlugin)).FirstOrDefault();
+            if (plugin != null)
+            {
+                plugin.Enabled = false;
+                return true;
+            }
+            else
+            {
+                Logger.Warn("Tried to disable non installed plugin " + installedPlugin.Name);
+                return false;
+            }
         }
 
         public static void DisableRemoteCThumbprint(Root root, CThumbprint thumbprint)

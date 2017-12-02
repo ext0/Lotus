@@ -25,6 +25,7 @@ import org.lotusconnect.data.LAESInfo;
 import org.lotusconnect.data.LocalConfig;
 import org.lotusconnect.data.system.SystemInfo;
 import org.lotusconnect.main.Program;
+import org.lotusconnect.plugin.PluginStore;
 
 public class RConnection {
 
@@ -100,7 +101,7 @@ public class RConnection {
 
 			String identifier = Base64.getEncoder().encodeToString(LocalConfig.loadConfig().getCIdentifier());
 			CThumbprint thumbprint = new CThumbprint(identifier, Program.APPLICATION_VERSION, "local", Program.AUTH,
-					SystemInfo.getHostname());
+					SystemInfo.getHostname(), PluginStore.getInstalledPluginDefinitions());
 
 			{
 				byte[] bsonThumbprint = (new BSONConvert<CThumbprint>()).toBytes(thumbprint);

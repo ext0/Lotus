@@ -42,6 +42,11 @@
     content-type="text/html">
   </resource>
   <resource
+    path="Templates/Plugins"
+    location="LotusWeb.View.Templates.Plugins.html"
+    content-type="text/html">
+  </resource>
+  <resource
     path="404"
     location="LotusWeb.View.404.html"
     content-type="text/html"
@@ -63,6 +68,11 @@
     content-type="application/javascript">
   </resource>
   <resource
+    path="Scripts/PluginController.js"
+    location="LotusWeb.View.Scripts.PluginController.js"
+    content-type="application/javascript">
+  </resource>
+  <resource
     path="Scripts/Bootstrapper.js"
     location="LotusWeb.View.Scripts.Bootstrapper.js"
     content-type="application/javascript">
@@ -75,6 +85,11 @@
   <resource
     path="Scripts/Services/ClientStore.js"
     location="LotusWeb.View.Scripts.Services.ClientStore.js"
+    content-type="text/html">
+  </resource>
+  <resource
+    path="Scripts/Services/PluginStore.js"
+    location="LotusWeb.View.Scripts.Services.PluginStore.js"
     content-type="text/html">
   </resource>
   <resource

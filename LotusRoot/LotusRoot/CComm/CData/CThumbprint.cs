@@ -1,4 +1,5 @@
-﻿using LotusRoot.RComm;
+﻿using LotusRoot.LComm.Data;
+using LotusRoot.RComm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,10 @@ namespace LotusRoot.CComm.CData
         private DateTime _lastheartbeat;
         private String _auth;
         private String _hostname;
+        private LInstalledPlugin[] _installedPlugins;
         private bool _active;
 
-        public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth, String hostname, bool active)
+        public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth, String hostname, bool active, LInstalledPlugin[] installedPlugins)
         {
             _cidentifier = cIdentifier;
             _cversion = cVersion;
@@ -28,6 +30,7 @@ namespace LotusRoot.CComm.CData
             _auth = auth;
             _hostname = hostname;
             _active = active;
+            _installedPlugins = installedPlugins;
         }
 
         public String Auth
@@ -63,6 +66,18 @@ namespace LotusRoot.CComm.CData
             set
             {
                 _cversion = value;
+            }
+        }
+
+        public LInstalledPlugin[] InstalledPlugins
+        {
+            get
+            {
+                return _installedPlugins;
+            }
+            set
+            {
+                _installedPlugins = value;
             }
         }
 

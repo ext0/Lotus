@@ -9,6 +9,7 @@
     @Favicon@
     @UserInfo@
     <script src="Scripts/CPanelController.js"></script>
+    <script src="Scripts/PluginController.js"></script>
 </head>
 <body class="bg-grayLighter" ng-app="Lotus">
     @Header@
@@ -33,14 +34,8 @@
                     <div ng-show="activeTab.title == 'clients'">
                         <all-clients></all-clients>
                     </div>
-                    <div ng-show="activeTab.title == 'live clients'">
-
-                    </div>
-                    <div ng-show="activeTab.title == 'offline clients'">
-
-                    </div>
                     <div ng-show="activeTab.title == 'plugins'">
-
+                        <plugins></plugins>
                     </div>
                     <div ng-show="activeTab.title == 'world map'">
 

@@ -42,3 +42,7 @@
 .tabcontrol .tabs li:hover a {
     background-color: #1d1d1d;
 }
+
+.cycle-button, .round-button, .square-button {
+    border: 1px solid #3c3f41;
+}

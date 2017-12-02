@@ -97,9 +97,12 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LogoutController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\RegisterController.cs" />
+    <Compile Include="Data\Contexts\PluginContext.cs" />
     <Compile Include="Data\WClientStore.cs" />
     <Compile Include="Data\Contexts\UserContext.cs" />
+    <Compile Include="Data\WPluginStore.cs" />
     <Compile Include="Data\WRootStore.cs" />
     <Compile Include="Logic\Communication\HTTPErrorMessage.cs" />
     <Compile Include="Logic\Crypto\SessionHub.cs" />
@@ -197,6 +200,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="View\Scripts\Services\ClientStore.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Scripts\Services\PluginStore.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Scripts\PluginController.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\Templates\Plugins.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

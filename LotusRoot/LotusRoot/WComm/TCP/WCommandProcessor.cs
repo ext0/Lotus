@@ -1,4 +1,5 @@
 ﻿using log4net;
+using LotusRoot.Bson;
 using LotusRoot.CComm.TCP;
 using LotusRoot.Datastore;
 using LotusRoot.LComm.Data;
@@ -57,10 +58,37 @@ namespace LotusRoot.WComm.TCP
                 Logger.Error("CConnection does not exist for identifier " + cIdentifier + "!");
                 return;
             }
-            connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
+            if (request.Command.Equals("INSTALLPLUGIN"))
             {
-                _connection.SendResponse(response, LMetadata.NOTHING);
-            });
+                LInstalledPlugin installedPlugin = BsonConvert.DeserializeObject<LInstalledPlugin>(Convert.FromBase64String(request.Parameters[1]));
+                bool success = RClientStore.AddInstalledPluginFromCIdentifier(cIdentifier, installedPlugin);
+                if (success)
+                {
+                    connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
+                    {
+                        _connection.SendResponse(response, LMetadata.NOTHING);
+                    });
+                }
+            }
+            else if (request.Command.Equals("DISABLEPLUGIN"))
+            {
+                LInstalledPlugin installedPlugin = BsonConvert.DeserializeObject<LInstalledPlugin>(Convert.FromBase64String(request.Parameters[1]));
+                bool success = RClientStore.DisableInstalledPluginFromCIdentifier(cIdentifier, installedPlugin);
+                if (success)
+                {
+                    connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
+                    {
+                        _connection.SendResponse(response, LMetadata.NOTHING);
+                    });
+                }
+            }
+            else
+            {
+                connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
+                {
+                    _connection.SendResponse(response, LMetadata.NOTHING);
+                });
+            }
         }
         public void ProcessResponse(LResponse response)
         {

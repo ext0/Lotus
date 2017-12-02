@@ -1,5 +1,5 @@
 package org.lotusconnect.plugin;
 
 public interface Responder {
-	void respondString(String string);
+	void respondString(String string) throws Exception;
 }

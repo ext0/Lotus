@@ -9,3 +9,9 @@ lotus.directive('allClients', function () {
         templateUrl: '/Templates/AllClients'
     };
 });
+
+lotus.directive('plugins', function () {
+    return {
+        templateUrl: '/Templates/Plugins'
+    };
+});

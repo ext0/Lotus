@@ -6,13 +6,16 @@ public class CThumbprint {
 	private String _cip;
 	private String _auth;
 	private String _hostname;
+	private LInstalledPlugin[] _installedPlugins;
 
-	public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth, String hostname) {
+	public CThumbprint(String cIdentifier, int cVersion, String cIP, String auth, String hostname,
+			LInstalledPlugin[] installedPlugins) {
 		_cidentifier = cIdentifier;
 		_cversion = cVersion;
 		_cip = cIP;
 		_auth = auth;
 		_hostname = hostname;
+		_installedPlugins = installedPlugins;
 	}
 
 	public String getCIdentifier() {
@@ -20,7 +23,7 @@ public class CThumbprint {
 	}
 
 	public void setCIdentifier(String cIdentifier) {
-		this._cidentifier = cIdentifier;
+		_cidentifier = cIdentifier;
 	}
 
 	public int getCVersion() {
@@ -28,7 +31,7 @@ public class CThumbprint {
 	}
 
 	public void setCVersion(int cVersion) {
-		this._cversion = cVersion;
+		_cversion = cVersion;
 	}
 
 	public String getCIP() {
@@ -36,7 +39,7 @@ public class CThumbprint {
 	}
 
 	public void setCIP(String cIP) {
-		this._cip = cIP;
+		_cip = cIP;
 	}
 
 	public String getAuth() {
@@ -44,9 +47,8 @@ public class CThumbprint {
 	}
 
 	public void setAuth(String auth) {
-		this._auth = auth;
+		_auth = auth;
 	}
-
 
 	public String getHostname() {
 		return _hostname;
@@ -54,6 +56,14 @@ public class CThumbprint {
 
 	public void setHostname(String hostname) {
 		_hostname = hostname;
+	}
+
+	public LInstalledPlugin[] getInstalledPlugins() {
+		return _installedPlugins;
+	}
+
+	public void setInstalledPlugins(LInstalledPlugin[] installedPlugins) {
+		_installedPlugins = installedPlugins;
 	}
 
 }

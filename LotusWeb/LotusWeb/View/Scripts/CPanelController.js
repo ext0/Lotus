@@ -1,4 +1,4 @@
-﻿lotus.controller("CPanelController", ["$scope", "$http", "$window", "$cookies", "$websocket", "uuid", "ClientStore", function ($scope, $http, $window, $cookies, $websocket, uuid, ClientStore) {
+﻿lotus.controller("CPanelController", ["$scope", "$http", "$window", "$cookies", "$websocket", "uuid", "ClientStore", "PluginStore", function ($scope, $http, $window, $cookies, $websocket, uuid, ClientStore, PluginStore) {
     if (!$scope.authenticated) {
         console.log("WARN: Not authenticated!");
         $window.location.href = "/Login";
@@ -52,6 +52,7 @@
 
     $scope.clientStore = ClientStore;
 
+    PluginStore.loadPlugins();
     ClientStore.updateClientList();
 
     $scope.clientSelect = function (section, client) {
