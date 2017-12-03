@@ -10,7 +10,7 @@ namespace LotusWeb.Logic.Crypto
 {
     public static class SessionHub
     {
-        public static String SpawnSession(UserContext context, User user)
+        public static String SpawnSession(LotusContext context, User user)
         {
             using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
             {
@@ -27,7 +27,7 @@ namespace LotusWeb.Logic.Crypto
         public static bool InvalidateSession(String cookie)
         {
             bool deleted = false;
-            using (UserContext db = new UserContext())
+            using (LotusContext db = new LotusContext())
             {
                 IQueryable<User.UserLoginSession> sessions = db.Sessions.Where(x => x.Cookie.Equals(cookie));
                 foreach (User.UserLoginSession session in sessions)
@@ -42,7 +42,7 @@ namespace LotusWeb.Logic.Crypto
 
         public static User GetUserFromCookie(String cookie)
         {
-            using (UserContext db = new UserContext())
+            using (LotusContext db = new LotusContext())
             {
                 User user = db.Users.Where(x => x.Sessions.Where(y => y.Cookie.Equals(cookie)).Count() != 0).FirstOrDefault();
                 if (user != null)

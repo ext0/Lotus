@@ -1,11 +1,12 @@
-﻿<h1 class="text-light" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
-    data-hint="Clients|Displays all clients that have been connected and registered to this account.">
-    Clients
-</h1>
-<hr class="thin bg-red" />
-<div class="flex-grid">
-    <div class="row cells">
-        <div class="cell size3 padding5">
+﻿<div ng-hide="clientSelected()">
+    <h1 class="text-light" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
+        data-hint="Clients|Displays all clients that have been connected and registered to this account.">
+        Clients
+    </h1>
+    <hr class="thin bg-red" />
+    <div class="row">
+        <hr class="thin bg-red" />
+        <div class="cell colspan12 padding5" style="padding-right: 5px;">
             <div class="panel bg-grayLighter">
                 <div class="heading bg-gray">
                     <span class="icon mif-display bg-darkGray"></span>
@@ -16,49 +17,78 @@
                     </a>
                 </div>
                 <div class="content white-background">
-                    <table class="dataTable border bordered no-footer white-background" role="grid">
+                    <table class="dataTable no-footer white-background" role="grid">
                         <thead>
                             <tr role="row">
-                                <td class="sortable-column sorting" style="width: 100px" tabindex="0" rowspan="1" colspan="1">Hostname</td>
-                                <td class="sortable-column sorting" style="width: 40px" tabindex="0" rowspan="1" colspan="1">IP</td>
-                                <td class="sortable-column sorting" style="width: 40px" tabindex="0" rowspan="1" colspan="1">Version</td>
-                                <td class="sortable-column sorting" style="width: 20px" tabindex="0" rowspan="1" colspan="1">Connected</td>
+                                <td class="sortable-column sorting" tabindex="0" rowspan="1" colspan="1">Hostname</td>
+                                <td class="sortable-column sorting" tabindex="0" rowspan="1" colspan="1">IP</td>
+                                <td class="sortable-column sorting" tabindex="0" rowspan="1" colspan="1">Version</td>
+                                <td class="sortable-column sorting" tabindex="0" rowspan="1" colspan="1">Connected</td>
+                                <td class="sortable-column sorting" tabindex="0" rowspan="1" colspan="1"></td>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr role="row" ng-repeat="thumbprint in clientStore.cthumbs" class="hover-row clickable" ng-click="clientSelect('Clients', thumbprint)">
+                            <tr role="row" ng-repeat="thumbprint in clientStore.cthumbs" class="hover-row clickable" ng-click="clientSelect(thumbprint)">
                                 <td>{{thumbprint.Hostname}}</td>
                                 <td>{{thumbprint.CIP.substring(0, thumbprint.CIP.indexOf(":"))}}</td>
                                 <td>{{thumbprint.CVersion}}</td>
                                 <td class="align-center">
                                     <span ng-class="{'mif-cross fg-red': !thumbprint.Active, 'mif-checkmark fg-green': thumbprint.Active}"></span>
                                 </td>
+                                <td><button class="button full-size primary" ng-disabled="!thumbprint.Active">Open</button></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="cell size9 padding5">
+    </div>
+</div>
+<div ng-show="clientSelected()">
+    <h1 class="text-light" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
+        data-hint="{{selected.Hostname}}|{{selected.CIP}}">
+        {{selected.Hostname}}
+        <button class="button rounded place-right" ng-click="clientDetach()">back</button>
+    </h1>
+    <hr class="thin bg-red" />
+    <div class="row">
+        <div class="cell auto-size padding5">
             <div class="panel bg-grayLighter">
                 <div class="heading bg-red">
                     <span class="icon mif-display bg-darkRed"></span>
                     <span class="title" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
-                          data-hint="Client|Summary of the client and links to more panels">Client{{(selected['AllClients'] != null) ? ' ('+selected['AllClients'].Hostname+')' : ''}}</span>
+                          data-hint="Client|Client control view">Client{{(selected != null) ? ' ('+selected.Hostname+')' : ''}}</span>
                 </div>
-                <div class="tabcontrol client-tab">
-                    <ul class="tabs">
-                        <li>
-                            <a href="#guid-0000">Kronos</a>
-                        </li>
-                        <li>
-                            <a href="#grid-9999">Zeus</a>
-                        </li>
-                    </ul>
-                    <div class="frames">
-                        <div class="frame client-tab-inner" id="guid-0000">
+                <div class="row padding5">
+                    <div class="cell auto-size padding5">
+                        <div class="tabcontrol client-tab">
+                            <ul class="tabs">
+                                <li ng-repeat="plugin in getLocalizedPlugins(selected)">
+                                    <a href="#{{plugin.Name}}">{{plugin.TabHeader}}</a>
+                                </li>
+                            </ul>
+                            <div class="frames">
+                                <div ng-repeat="plugin in getLocalizedPlugins(selected)" class="client-tab-inner" id="{{plugin.Name}}">
+                                    <div dynamic="plugin.Template"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="frame client-tab-inner" id="guid-9999">
+                    </div>
+                    <div class="cell size-x300 padding5">
+                        <div class="panel bg-grayLighter">
+                            <div class="heading bg-gray">
+                                <span class="icon mif-rocket bg-darkGray"></span>
+                                <span class="title" data-role="hint" data-hint-background="bg-gray" data-hint-color="fg-white" data-hint-mode="3" data-hint="Plugins|Shows installed and installable plugins">Plugins</span>
+                            </div>
+                            <div class="content">
+                                <div class="content user-plugin-list-entry" ng-repeat="plugin in pluginStore.userPlugins">
+                                    <div class="row">
+                                        <h4 class="cell colspan6">{{plugin.Name}}</h4>
+                                        <h5 class="cell colspan2">v{{plugin.Version}}.0</h5>
+                                        <button class="button primary colspan4 full-size" ng-disabled="isLoadingPlugin(plugin, selected)" ng-click="toggleActivePlugin(plugin, selected)" ng-class="{'primary': !clientHasPlugin(plugin, selected), 'danger': clientHasPlugin(plugin, selected), 'loading-cube': isLoadingPlugin(plugin, selected)}">{{clientHasPlugin(plugin, selected) ? "Uninstall" : "Install"}}</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

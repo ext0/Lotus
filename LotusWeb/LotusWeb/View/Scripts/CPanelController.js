@@ -1,102 +1,159 @@
-﻿lotus.controller("CPanelController", ["$scope", "$http", "$window", "$cookies", "$websocket", "uuid", "ClientStore", "PluginStore", function ($scope, $http, $window, $cookies, $websocket, uuid, ClientStore, PluginStore) {
-    if (!$scope.authenticated) {
+﻿lotus.controller("CPanelController", ["$scope", "$http", "$window", "$cookies", "$websocket", "uuid", "ClientStore", "PluginStore", "$sce", function ($scope, $http, $window, $cookies, $websocket, uuid, ClientStore, PluginStore, $sce) {
+    var vm = $scope;
+    if (!vm.authenticated) {
         console.log("WARN: Not authenticated!");
         $window.location.href = "/Login";
         return;
     }
 
-    $scope.selected = {};
-    $scope.refreshing = false;
+    vm.selected = null;
+    vm.refreshing = false;
+
+    vm.clientStore = ClientStore;
+    vm.pluginStore = PluginStore;
 
     /*
         TAB SYSTEM
     */
 
-    $scope.sidebar = [
-    {
-        title: "overview",
-        caption: "",
-        icon: "mif-apps"
-    },
-    {
-        title: "clients",
-        caption: "0 clients",
-        icon: "mif-stack"
-    },
-    {
-        title: "plugins",
-        caption: "0 plugins available",
-        icon: "mif-versions"
-    },
-    {
-        title: "world map",
-        caption: "",
-        icon: "mif-earth"
-    },
-    {
-        title: "configuration",
-        caption: "",
-        icon: "mif-cogs"
-    }
+    vm.sidebar = [
+        {
+            title: "overview",
+            caption: () => { return "" },
+            icon: "mif-apps"
+        },
+        {
+            title: "clients",
+            caption: () => { return vm.clientStore.cthumbs.length + " client" + ((vm.clientStore.cthumbs.length === 1) ? "" : "s") },
+            icon: "mif-stack"
+        },
+        {
+            title: "plugins",
+            caption: () => {
+                return vm.pluginStore.plugins.length + " plugin" + ((vm.pluginStore.plugins.length === 1) ? "" : "s") + " available"
+            },
+            icon: "mif-versions"
+        },
+        {
+            title: "world map",
+            caption: () => { return "" },
+            icon: "mif-earth"
+        },
+        {
+            title: "configuration",
+            caption: () => { return "" },
+            icon: "mif-cogs"
+        }
     ];
 
-    $scope.activeTab = $scope.sidebar[0];
+    vm.activeTab = vm.sidebar[0];
 
-    $scope.sidebarClick = function (tab) {
-        $scope.activeTab = tab;
+    vm.sidebarClick = function (tab) {
+        vm.activeTab = tab;
     };
 
     /*
         CLIENT CONTROL
     */
 
-    $scope.clientStore = ClientStore;
-
     PluginStore.loadPlugins();
+    PluginStore.loadUserPlugins();
+
     ClientStore.updateClientList();
 
-    $scope.clientSelect = function (section, client) {
-        $scope.selected[section] = client;
+    vm.buttonsLoading = {};
+
+    vm.clientSelected = function () {
+        return vm.selected !== null;
     }
 
-    $scope.clientRefresh = function () {
-        $scope.refreshing = true;
+    vm.clientDetach = function () {
+        vm.clientSelect(null);
+    }
+
+    vm.clientSelect = function (client) {
+        vm.selected = client;
+        window.selectedClient = client;
+    }
+
+    vm.clientHasPlugin = function (plugin, client) {
+        if (!client) {
+            return false;
+        }
+        return client.InstalledPlugins.filter(x => { return x.Name === plugin.Name && x.Version === plugin.Version }).length !== 0;
+    }
+
+    vm.markAsLoadingPlugin = function (plugin, client) {
+        if (!vm.buttonsLoading[client]) {
+            vm.buttonsLoading[client] = {};
+        }
+        vm.buttonsLoading[client][plugin] = true;
+    }
+
+    vm.markAsDoneLoadingPlugin = function (plugin, client) {
+        if (!vm.buttonsLoading[client]) {
+            vm.buttonsLoading[client] = {};
+        }
+        vm.buttonsLoading[client][plugin] = false;
+    }
+
+    vm.isLoadingPlugin = function (plugin, client) {
+        if (!vm.buttonsLoading[client]) {
+            return false;
+        }
+        return !!vm.buttonsLoading[client][plugin];
+    }
+
+    vm.getLocalizedPlugins = function (client) {
+        if (!client) {
+            return [];
+        }
+        var val = client.InstalledPlugins.map(function (plugin) {
+            return vm.pluginStore.userPlugins.filter(x => { return x.Name === plugin.Name && x.Version === plugin.Version })[0];
+        });
+        return val.filter(plugin => !!plugin);
+    };
+
+    vm.toggleActivePlugin = function (plugin, client) {
+        var hasPlugin = vm.clientHasPlugin(plugin, client);
+        vm.markAsLoadingPlugin(plugin, client);
+        if (!hasPlugin) {
+            var request = vm.clientStore.buildRequest("INSTALLPLUGIN", client.CIdentifier, plugin.Name);
+            vm.clientStore.sendRequest(request, function (data) {
+                vm.markAsDoneLoadingPlugin(plugin, client);
+                var success = data === "SUCCESS";
+                if (!success) {
+                    $.Notify({
+                        caption: "Failed to install plugin",
+                        content: " ",
+                        type: 'alert'
+                    });
+                } else {
+                    client.InstalledPlugins.push(plugin);
+                }
+            });
+        } else {
+            var request = vm.clientStore.buildRequest("DISABLEPLUGIN", client.CIdentifier, plugin.Name);
+            vm.clientStore.sendRequest(request, function (data) {
+                vm.markAsDoneLoadingPlugin(plugin, client);
+                var success = data === "SUCCESS";
+                if (!success) {
+                    $.Notify({
+                        caption: "Failed to uninstall plugin",
+                        content: " ",
+                        type: 'alert'
+                    });
+                } else {
+                    client.InstalledPlugins = client.InstalledPlugins.filter(x => { return x.Name !== plugin.Name && x.Version !== plugin.Version });
+                }
+            });
+        }
+    }
+
+    vm.clientRefresh = function () {
+        vm.refreshing = true;
         ClientStore.updateClientList(function () {
-            $scope.refreshing = false;
+            vm.refreshing = false;
         });
     }
-    /*
-    $scope.clientLogoff = function () {
-        var select = $scope.selected['Clients'];
-        $scope.sendClientRequest(select, 'CLOGOFF', function (result) {
-            $.Notify({
-                caption: "Logoff command sent",
-                content: "Successful command execution",
-                type: 'info'
-            });
-        });
-    };
-
-    $scope.clientShutdown = function () {
-        var select = $scope.selected['Clients'];
-        $scope.sendClientRequest(select, 'CSHUTDOWN', function (result) {
-            $.Notify({
-                caption: "Shutdown command sent",
-                content: "Successful command execution",
-                type: 'info'
-            });
-        });
-    };
-
-    $scope.clientRestart = function () {
-        var select = $scope.selected['Clients'];
-        $scope.sendClientRequest(select, 'CRESTART', function (result) {
-            $.Notify({
-                caption: "Restart command sent",
-                content: "Successful command execution",
-                type: 'info'
-            });
-        });
-    };
-    */
 }]);

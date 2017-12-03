@@ -60,7 +60,10 @@ namespace LotusRoot.Datastore
             if (exists != null)
             {
                 Logger.Debug("Local CThumbprint reactivated (" + connection.Thumbprint.CIdentifier + ")!");
-                exists.Active = true;
+                // remove/replace old "equal" thumbprint. new one may have new IP, plugins, etc
+                _thumbprints.GetKeyPair(LocalRoot.Local).Thumbprints.Remove(exists);
+                _thumbprints.GetKeyPair(LocalRoot.Local).Thumbprints.Add(connection.Thumbprint);
+                Logger.Info(connection.Thumbprint.InstalledPlugins.Length);
             }
             else
             {
@@ -86,7 +89,9 @@ namespace LotusRoot.Datastore
             if (exists != null && !exists.Active)
             {
                 Logger.Debug("Remote CThumbprint reactivated (" + thumbprint.CIdentifier + ")!");
-                exists.Active = true;
+                // remove/replace old "equal" thumbprint. new one may have new IP, plugins, etc
+                _thumbprints.GetKeyPair(root).Thumbprints.Remove(exists);
+                _thumbprints.GetKeyPair(root).Thumbprints.Add(thumbprint);
             }
             else if (exists == null)
             {
@@ -144,12 +149,14 @@ namespace LotusRoot.Datastore
             if (plugin != null)
             {
                 plugin.Enabled = true;
+                SaveCThumbprintStore();
                 return true;
             }
             else
             {
                 installedPlugins.Add(installedPlugin);
                 connection.Thumbprint.InstalledPlugins = installedPlugins.ToArray();
+                SaveCThumbprintStore();
                 return true;
             }
         }
@@ -168,7 +175,9 @@ namespace LotusRoot.Datastore
             LInstalledPlugin plugin = installedPlugins.Where(x => x.Equals(installedPlugin)).FirstOrDefault();
             if (plugin != null)
             {
-                plugin.Enabled = false;
+                installedPlugins.Remove(plugin);
+                connection.Thumbprint.InstalledPlugins = installedPlugins.ToArray();
+                SaveCThumbprintStore();
                 return true;
             }
             else

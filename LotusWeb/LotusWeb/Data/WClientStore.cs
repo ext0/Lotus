@@ -26,7 +26,9 @@ namespace LotusWeb.Data
             CThumbprint exists = _thumbprints[root].Where((x) => x.Equals(thumbprint)).FirstOrDefault();
             if (exists != null)
             {
-                exists.Active = true;
+                // remove/replace old "equal" thumbprint. new one may have new IP, plugins, etc
+                _thumbprints[root].Remove(exists);
+                _thumbprints[root].Add(thumbprint);
                 Logger.Debug("CThumbprint reactivated (" + thumbprint.CIdentifier + ")!");
             }
             else
@@ -70,6 +72,21 @@ namespace LotusWeb.Data
             if (root != null)
             {
                 return WRootStore.GetConnectionFromRoot(root);
+            }
+            return null;
+        }
+
+        public static CThumbprint GetThumbprintFromCIdentifier(String identifier)
+        {
+            foreach (KeyValuePair<Root, List<CThumbprint>> thumbprints in _thumbprints)
+            {
+                foreach (CThumbprint loop in thumbprints.Value)
+                {
+                    if (loop.CIdentifier.Equals(identifier))
+                    {
+                        return loop;
+                    }
+                }
             }
             return null;
         }

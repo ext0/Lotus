@@ -33,7 +33,7 @@ namespace LotusRoot.RComm
         public static void BootstrapRootBeacon()
         {
             Timer poller = new Timer(new TimerCallback((state) => UpdateRoots()));
-            poller.Change(0, RHandler.BEACON_POLL_TIME);
+            poller.Change(0, BEACON_POLL_TIME);
         }
 
         private static void UpdateRoots()

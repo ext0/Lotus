@@ -61,26 +61,26 @@ namespace LotusRoot.WComm.TCP
             if (request.Command.Equals("INSTALLPLUGIN"))
             {
                 LInstalledPlugin installedPlugin = BsonConvert.DeserializeObject<LInstalledPlugin>(Convert.FromBase64String(request.Parameters[1]));
-                bool success = RClientStore.AddInstalledPluginFromCIdentifier(cIdentifier, installedPlugin);
-                if (success)
+                connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
                 {
-                    connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
+                    if (response.Data.Equals("SUCCESS"))
                     {
-                        _connection.SendResponse(response, LMetadata.NOTHING);
-                    });
-                }
+                        bool success = RClientStore.AddInstalledPluginFromCIdentifier(cIdentifier, installedPlugin);
+                    }
+                    _connection.SendResponse(response, LMetadata.NOTHING);
+                });
             }
             else if (request.Command.Equals("DISABLEPLUGIN"))
             {
                 LInstalledPlugin installedPlugin = BsonConvert.DeserializeObject<LInstalledPlugin>(Convert.FromBase64String(request.Parameters[1]));
-                bool success = RClientStore.DisableInstalledPluginFromCIdentifier(cIdentifier, installedPlugin);
-                if (success)
+                connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
                 {
-                    connection.SendCallbackRequest(request, LMetadata.NOTHING, (response) =>
+                    if (response.Data.Equals("SUCCESS"))
                     {
-                        _connection.SendResponse(response, LMetadata.NOTHING);
-                    });
-                }
+                        bool success = RClientStore.DisableInstalledPluginFromCIdentifier(cIdentifier, installedPlugin);
+                    }
+                    _connection.SendResponse(response, LMetadata.NOTHING);
+                });
             }
             else
             {

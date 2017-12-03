@@ -11,7 +11,7 @@ namespace LotusWeb.Data
     {
         public static Plugin GetPluginByName(String name)
         {
-            using (PluginContext db = new PluginContext())
+            using (LotusContext db = new LotusContext())
             {
                 return db.Plugins.Where((x) => x.Name.Equals(name)).FirstOrDefault();
             }

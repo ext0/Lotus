@@ -2,12 +2,137 @@
     <h1 class="text-light" data-role="hint" data-hint-background="bg-red" data-hint-color="fg-white" data-hint-mode="3"
         data-hint="Plugins|Displays available plugins">
         Plugins
-        <button class="button cycle-button" ng-click="openPluginUploadForm()">+</button>
+        <button class="button rounded place-right" ng-click="topRightButtonAction()">{{(pluginUploadFormOpen || pluginUpdateFormOpen) ? "back" : "upload plugin"}}</button>
     </h1>
     <hr class="thin bg-red" />
-    <div class="flex-grid">
-        <div class="row cells">
-
+    <div ng-hide="pluginUploadFormOpen || pluginUpdateFormOpen" class="padding5">
+        <div class="panel" ng-repeat="plugin in plugins">
+            <div class="content plugin-list-entry">
+                <div class="row">
+                    <h4 class="cell colspan12">{{plugin.Name}} (v{{plugin.Version}}.0)</h4>
+                    <div style="position: absolute; right: 0; padding-right: 5px;">
+                        <button class="cell colspan1 button" ng-click="togglePlugin(plugin)" ng-class="{'primary': !isEnabledPlugin(plugin), 'danger': isEnabledPlugin(plugin)}">{{isEnabledPlugin(plugin) ? "Disable" : "Enable"}}</button>
+                        <button class="cell colspan1 button primary" ng-click="openUpdateForm(plugin)">Update</button>
+                    </div>
+                </div>
+                <hr class="thin bg-red" />
+                <div class="row">
+                    <p class="cell colspan8">{{plugin.Description}}</p>
+                    <p class="cell colspan4" style="text-align:right; font-style: italic">{{"by " + plugin.Uploader}}</p>
+                </div>
+            </div>
         </div>
+    </div>
+    <div ng-show="pluginUpdateFormOpen">
+
+        <div ng-form="PluginUpdateForm">
+            <label>Plugin name</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="plugin-name" ng-model="pluginUpdate.Name" required disabled>
+            </div>
+
+            <label>Plugin description</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="plugin description" ng-model="pluginUpdate.Description" required>
+            </div>
+
+            <label>Plugin version</label>
+            <div class="input-control number full-size">
+                <input type="number" ng-model="pluginUpdate.Version" placeholder="1" required disabled>
+            </div>
+
+            <label>Plugin class class path</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="com.example.Plugin" ng-model="pluginUpdate.Lass" required disabled>
+            </div>
+
+            <label>Interface tab header</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="My Plugin" ng-model="pluginUpdate.Name2" required>
+            </div>
+
+            <label>Interface tab icon</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="mif-file-code" ng-model="pluginUpdate.Name3" required>
+            </div>
+
+            <label>.class file</label>
+            <div class="input-control file full-size" data-role="input">
+                <input type="file" tabindex="-1" style="z-index: 0;" ng-file-model="pluginUpdate.Dass" required>
+                <button class="button" type="button"><span class="mif-folder"></span></button>
+            </div>
+
+            <label>HTML Template</label>
+            <div class="input-control file full-size" data-role="input">
+                <input type="file" tabindex="-1" style="z-index: 0;" ng-file-model="pluginUpdate.Template" required>
+                <button class="button" type="button"><span class="mif-folder"></span></button>
+            </div>
+
+            <label>JavaScript Controller</label>
+            <div class="input-control file full-size" data-role="input">
+                <input type="file" tabindex="-1" style="z-index: 0;" ng-file-model="pluginUpdate.Ontroller" required>
+                <button class="button" type="button"><span class="mif-folder"></span></button>
+            </div>
+
+            <p class="fg-red" ng-show="pluginUpdateErrorMessage">{{pluginUpdateErrorMessage}}</p>
+            <button class="button" type="submit" ng-disabled="!PluginUpdateForm.$valid" ng-class="{'loading-cube': pluginUpdating}" ng-click="updatePlugin()">Update</button>
+        </div>
+
+    </div>
+    <div ng-show="pluginUploadFormOpen">
+
+        <div ng-form="PluginUploadForm">
+            <label>Plugin name</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="plugin-name" ng-model="pluginUpload.Name" required>
+            </div>
+
+            <label>Plugin description</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="plugin description" ng-model="pluginUpload.Description" required>
+            </div>
+
+            <label>Plugin version</label>
+            <div class="input-control number full-size">
+                <input type="number" ng-model="pluginUpload.Version" placeholder="1" required>
+            </div>
+
+            <label>Plugin class class path</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="com.example.Plugin" ng-model="pluginUpload.Lass" required>
+            </div>
+
+            <label>Interface tab header</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="My Plugin" ng-model="pluginUpload.Name2" required>
+            </div>
+
+            <label>Interface tab icon</label>
+            <div class="input-control text full-size">
+                <input type="text" placeholder="mif-file-code" ng-model="pluginUpload.Name3" required>
+            </div>
+
+            <label>.class file</label>
+            <div class="input-control file full-size" data-role="input">
+                <input type="file" tabindex="-1" style="z-index: 0;" ng-file-model="pluginUpload.Dass" required>
+                <button class="button" type="button"><span class="mif-folder"></span></button>
+            </div>
+
+            <label>HTML Template</label>
+            <div class="input-control file full-size" data-role="input">
+                <input type="file" tabindex="-1" style="z-index: 0;" ng-file-model="pluginUpload.Template" required>
+                <button class="button" type="button"><span class="mif-folder"></span></button>
+            </div>
+
+            <label>JavaScript Controller</label>
+            <div class="input-control file full-size" data-role="input">
+                <input type="file" tabindex="-1" style="z-index: 0;" ng-file-model="pluginUpload.Ontroller" required>
+                <button class="button" type="button"><span class="mif-folder"></span></button>
+            </div>
+
+            <p class="fg-red" ng-show="pluginUploadErrorMessage">{{pluginUploadErrorMessage}}</p>
+            <button class="button" type="submit" ng-disabled="!PluginUploadForm.$valid" ng-class="{'loading-cube': pluginUploading}" ng-click="uploadPlugin()">Upload</button>
+        </div>
+
     </div>
 </div>

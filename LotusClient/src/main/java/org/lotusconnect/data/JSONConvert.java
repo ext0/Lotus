@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JSONConvert<T> {
+public class JSONConvert {
 
 	private ObjectMapper mapper = new ObjectMapper(new JsonFactory());
 
@@ -24,7 +24,7 @@ public class JSONConvert<T> {
 				.withSetterVisibility(Visibility.PUBLIC_ONLY).withCreatorVisibility(Visibility.NONE));
 	}
 
-	public T fromBytes(byte[] bson, Class<T> clazz) {
+	public Object fromBytes(byte[] bson, Class<Object> clazz) {
 		ByteArrayInputStream memoryStream = new ByteArrayInputStream(bson);
 		try {
 			return mapper.readValue(memoryStream, clazz);
@@ -34,7 +34,7 @@ public class JSONConvert<T> {
 		}
 	}
 
-	public byte[] toBytes(T obj) {
+	public byte[] toBytes(Object obj) {
 		ByteArrayOutputStream memoryStream = new ByteArrayOutputStream();
 		try {
 			mapper.writeValue(memoryStream, obj);
@@ -45,11 +45,11 @@ public class JSONConvert<T> {
 		}
 	}
 	
-	public String toBase64(T obj) {
+	public String toBase64(Object obj) {
 		return Base64.getEncoder().encodeToString(toBytes(obj));
 	}
 	
-	public T fromBase64(String base64, Class<T> clazz) {
+	public Object fromBase64(String base64, Class<Object> clazz) {
 		return fromBytes(Base64.getDecoder().decode(base64), clazz);
 	}
 }

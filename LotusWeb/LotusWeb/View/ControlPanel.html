@@ -22,12 +22,12 @@
                             <a href="#">
                                 <span class="{{entry.icon}} icon"></span>
                                 <span class="title">{{entry.title}}</span>
-                                <span class="counter" ng-show="entry.caption">{{entry.caption}}</span>
+                                <span class="counter">{{entry.caption()}}</span>
                             </a>
                         </li>
                     </ul>
                 </div>
-                <div class="cell auto-size padding20">
+                <div class="cell auto-size padding20" style="overflow-y: scroll; padding-bottom: 60px;">
                     <div ng-show="activeTab.title == 'overview'">
                         <overview></overview>
                     </div>

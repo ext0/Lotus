@@ -7,15 +7,15 @@
 }
 
 .hover-row:hover {
-    background-color: #eeeeee;
+    background-color: #f3f3f3;
 }
 
 .client-refresh-button {
     padding-right: 5px;
 }
 
-.client-tab {
-    padding: .625rem 0;
+.panel > .heading > .icon {
+    padding: 0.750rem;
 }
 
 .tabcontrol .tabs li {
@@ -35,8 +35,15 @@
     color: white;
     background-color: #555555;
     border-radius: 6px 6px 0px 0px;
-    border: #b5b5b5 1px solid;
     text-transform: initial
+}
+
+.table tfoot td, .table tfoot th, .table thead td, .table thead th {
+    color: #555555;
+}
+
+[class*=" mif-"], [class^=mif-] {
+    margin-right: 4px;
 }
 
 .tabcontrol .tabs li:hover a {
@@ -45,4 +52,36 @@
 
 .cycle-button, .round-button, .square-button {
     border: 1px solid #3c3f41;
+}
+
+.plugin-toggle {
+    margin: .625rem 0;
+}
+
+.plugin-list-entry {
+    border: 1px #b2b2b2 solid;
+    margin-top: 5px;
+    padding: 5px;
+}
+
+.user-plugin-list-entry {
+    border: 1px #b2b2b2 solid;
+    margin-top: 5px;
+    padding: 0 5px;
+}
+
+.dataTable tfoot td, .dataTable tfoot th, .dataTable thead td, .dataTable thead th {
+    color: #555555;
+}
+
+.dataTable thead {
+    border-bottom: 3px solid #ce352c;
+}
+
+.button.loading-cube:after, .button.loading-cube:before {
+    background-color: #fff;
+}
+
+.toolbar .toolbar-button > [class*=mif-] {
+    padding: 0.625rem 0;
 }

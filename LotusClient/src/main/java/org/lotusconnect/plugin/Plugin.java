@@ -1,5 +1,6 @@
 package org.lotusconnect.plugin;
 
+import org.lotusconnect.data.JSONConvert;
 import org.lotusconnect.data.LRequest;
 
 public class Plugin {
@@ -18,7 +19,7 @@ public class Plugin {
 
 	public Plugin() {
 	}
-	
+
 	public Plugin(String name, String description, int version, String author, String absoluteClassName,
 			byte[] compiledClassData) {
 		_name = name;
@@ -32,39 +33,39 @@ public class Plugin {
 	public String getName() {
 		return _name;
 	}
-	
+
 	public void setName(String name) {
 		_name = name;
 	}
-	
+
 	public String getDescription() {
 		return _description;
 	}
-	
+
 	public void setDescription(String description) {
 		_description = description;
 	}
-	
+
 	public String getAuthor() {
 		return _author;
 	}
-	
+
 	public void setAuthor(String author) {
 		_author = author;
 	}
-	
+
 	public String getAbsoluteClassPathName() {
 		return _absoluteClassName;
 	}
-	
+
 	public void setAbsoluteClassPathName(String absoluteClassName) {
 		_absoluteClassName = absoluteClassName;
 	}
-	
+
 	public byte[] getClassData() {
 		return _compiledClassData;
 	}
-	
+
 	public void setClassData(byte[] classData) {
 		_compiledClassData = classData;
 	}
@@ -72,7 +73,7 @@ public class Plugin {
 	public int getVersion() {
 		return _version;
 	}
-	
+
 	public void setVersion(int version) {
 		_version = version;
 	}
@@ -86,13 +87,13 @@ public class Plugin {
 		_compiled = (RequestHandler) _class.newInstance();
 	}
 
-	public boolean passRequest(LRequest request, RResponder responder) {
+	public boolean passRequest(LRequest request, RResponder responder) throws Exception {
 		return _compiled.handleRequest(request.getCommand(), request.getParameters(), request.getID(), responder);
 	}
 
 	public void bootstrap() {
 		_logger = new Log4JPluginLogger(_name);
-		_compiled.onLoad(_logger);
+		_compiled.onLoad(_logger, new ConcreteJSONObjectFactory());
 	}
 
 	public int hashCode() {

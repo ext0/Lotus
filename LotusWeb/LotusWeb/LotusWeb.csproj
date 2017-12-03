@@ -99,9 +99,8 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\RegisterController.cs" />
-    <Compile Include="Data\Contexts\PluginContext.cs" />
+    <Compile Include="Data\Contexts\LotusContext.cs" />
     <Compile Include="Data\WClientStore.cs" />
-    <Compile Include="Data\Contexts\UserContext.cs" />
     <Compile Include="Data\WPluginStore.cs" />
     <Compile Include="Data\WRootStore.cs" />
     <Compile Include="Logic\Communication\HTTPErrorMessage.cs" />
@@ -213,7 +212,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

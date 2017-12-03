@@ -32,7 +32,6 @@ namespace LotusWeb.WebSockets
         protected override void OnOpen()
         {
             _processor = new COPProcessor(this);
-            Logger.Info("Opened!");
         }
 
         public void SendLResponse(LRequest request, LResponse response)
@@ -63,7 +62,7 @@ namespace LotusWeb.WebSockets
             }
             catch (Exception ex)
             {
-                Logger.Warn("Error occured processing socket message : " + ex.Message);
+                Logger.Warn("Error occured processing socket message : " + ex.Message + ex.StackTrace);
             }
         }
     }

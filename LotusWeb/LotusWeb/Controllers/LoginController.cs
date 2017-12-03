@@ -33,7 +33,7 @@ namespace LotusWeb.Controllers
                 dynamic loginRequest = JsonParser.Deserialize(body);
                 String email = loginRequest.Email.Trim();
                 String password = loginRequest.Password;
-                using (UserContext db = new UserContext())
+                using (LotusContext db = new LotusContext())
                 {
                     User user = db.Users.Where(x => x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                     if (user != null)

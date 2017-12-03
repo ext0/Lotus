@@ -50,14 +50,19 @@ namespace LotusWeb.WebSockets
                 LRequest lRequest = new LRequest(authentication, request.Command, true, request.Parameters);
                 connection.SendCallbackRequest(lRequest, LMetadata.NOTHING, (response) =>
                 {
-                    response.OverwriteData(Encoding.UTF8.GetString(Convert.FromBase64String(response.Data)));
+                    if (response.Data.Equals("SUCCESS"))
+                    {
+                        List<LInstalledPlugin> installedPlugins = WClientStore.GetThumbprintFromCIdentifier(cIdentifier).InstalledPlugins.ToList();
+                        installedPlugins.Add(installedPluginDefinition);
+                        WClientStore.GetThumbprintFromCIdentifier(cIdentifier).InstalledPlugins = installedPlugins.ToArray();
+                    }
                     _server.SendLResponse(request, response);
                 });
             }
             else if (request.Command.Equals("DISABLEPLUGIN"))
             {
                 String cIdentifier = request.Parameters[0];
-                Plugin plugin = Utility.deserializeJSONToObject<Plugin>(request.Parameters[1]);
+                Plugin plugin = WPluginStore.GetPluginByName(request.Parameters[1]);
 
                 LInstalledPlugin installedPluginDefinition = new LInstalledPlugin(plugin.Name, plugin.Description, plugin.Uploader, plugin.Version, plugin.AbsoluteClassPathName, plugin.ClassData, false);
                 request.Parameters[1] = Convert.ToBase64String(BsonConvert.SerializeObject(installedPluginDefinition));
@@ -66,7 +71,12 @@ namespace LotusWeb.WebSockets
                 LRequest lRequest = new LRequest(authentication, request.Command, true, request.Parameters);
                 connection.SendCallbackRequest(lRequest, LMetadata.NOTHING, (response) =>
                 {
-                    response.OverwriteData(Encoding.UTF8.GetString(Convert.FromBase64String(response.Data)));
+                    if (response.Data.Equals("SUCCESS"))
+                    {
+                        List<LInstalledPlugin> installedPlugins = WClientStore.GetThumbprintFromCIdentifier(cIdentifier).InstalledPlugins.ToList();
+                        installedPlugins.Remove(installedPluginDefinition);
+                        WClientStore.GetThumbprintFromCIdentifier(cIdentifier).InstalledPlugins = installedPlugins.ToArray();
+                    }
                     _server.SendLResponse(request, response);
                 });
             }
@@ -77,7 +87,6 @@ namespace LotusWeb.WebSockets
                 LRequest lRequest = new LRequest(authentication, request.Command, true, request.Parameters);
                 connection.SendCallbackRequest(lRequest, LMetadata.NOTHING, (response) =>
                 {
-                    response.OverwriteData(Encoding.UTF8.GetString(Convert.FromBase64String(response.Data)));
                     _server.SendLResponse(request, response);
                 });
                 return;

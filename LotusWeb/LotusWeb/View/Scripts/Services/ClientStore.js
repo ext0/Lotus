@@ -32,14 +32,6 @@
             if (success) {
                 success();
             }
-            /*
-            for (var thumb of result) {
-                var built = $scope.buildRequest("CGETDRIVES", thumb.CIdentifier);
-                $scope.sendRequest(built, function (result) {
-                    console.log(result);
-                });
-            }
-            */
         });
     };
 

@@ -39,6 +39,8 @@ public class RCommandProcessor {
 					LInstalledPlugin.class);
 			if (PluginStore.pluginExists(installedPlugin.getName())) {
 				LOGGER.warn("Tried to install already existing plugin " + installedPlugin.getName());
+				LResponse response = new LResponse(request, "FAIL");
+				_connection.sendResponse(response, EnumSet.noneOf(LMetadata.class));
 				return;
 			}
 			boolean success = PluginStore.loadPlugin(installedPlugin.getName(), installedPlugin.getDescription(),
@@ -47,7 +49,8 @@ public class RCommandProcessor {
 			if (success) {
 				PluginStore.savePluginsToDisk();
 			}
-			String message = (success) ? "Successfully installed!" : "Installation failed!";
+			String message = (success) ? "SUCCESS" : "FAIL";
+			LOGGER.debug("Plugin (" + installedPlugin.getName() + ") install: " + message);
 			LResponse response = new LResponse(request, message);
 			_connection.sendResponse(response, EnumSet.noneOf(LMetadata.class));
 			return;
@@ -57,18 +60,29 @@ public class RCommandProcessor {
 					LInstalledPlugin.class);
 			if (!PluginStore.pluginExists(installedPlugin.getName())) {
 				LOGGER.warn("Tried to disable non-existent plugin " + installedPlugin.getName());
+				LResponse response = new LResponse(request, "FAIL");
+				_connection.sendResponse(response, EnumSet.noneOf(LMetadata.class));
 				return;
 			}
 			boolean success = PluginStore.unloadPlugin(installedPlugin.getName());
-			String message = (success) ? "Successfully disabled!" : "Disable failed!";
+			if (success) {
+				PluginStore.savePluginsToDisk();
+			}
+			String message = (success) ? "SUCCESS" : "FAIL";
+			LOGGER.debug("Plugin (" + installedPlugin.getName() + ") unload: " + message);
 			LResponse response = new LResponse(request, message);
 			_connection.sendResponse(response, EnumSet.noneOf(LMetadata.class));
 			return;
 		} else {
 			RResponder responder = new RResponder(_connection, request);
 			for (Plugin plugin : PluginStore.getLoadedPlugins()) {
-				boolean handled = plugin.passRequest(request, responder);
-				if (handled) {
+				try {
+					boolean handled = plugin.passRequest(request, responder);
+					if (handled) {
+						return;
+					}
+				} catch (Exception e) {
+					LOGGER.warn("Uncaught exception in plugin " + plugin.getName() + "! " + e.getMessage());
 					return;
 				}
 			}

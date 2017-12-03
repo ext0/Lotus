@@ -109,12 +109,23 @@ namespace LotusRoot.LComm.TCP
         public LPacket WaitForResponse()
         {
             byte[] header = new byte[LPacket.LENGTH_LENGTH];
-            for (int i = 0; i < header.Length; i++)
+            int i = 0;
+            while (i < header.Length)
             {
-                header[i] = (byte)_stream.ReadByte();
+                int strm = _stream.ReadByte();
+                if (strm == -1)
+                {
+                    continue;
+                }
+                header[i] = (byte)strm;
+                i++;
             }
             int length = BitConverter.ToInt32(header, 0);
-            byte metadata = (byte)_stream.ReadByte(); //awkward... zzzz
+            int metadata = -1;
+            while (metadata == -1)
+            {
+                metadata = _stream.ReadByte();
+            }
             byte[] data = new byte[length];
             int bytesRead = 0;
             while (bytesRead < length - LPacket.METADATA_LENGTH)
@@ -122,7 +133,7 @@ namespace LotusRoot.LComm.TCP
                 int read = _stream.Read(data, bytesRead, Math.Min(length - bytesRead, RESPONSE_BUFFER_SIZE));
                 bytesRead += read;
             }
-            return new LPacket(header, metadata, data);
+            return new LPacket(header, (byte)metadata, data);
         }
     }
 }
