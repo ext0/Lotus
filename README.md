@@ -1,1 +1,1 @@
-#Lotus
+Lotus is a web based modular administration tool for managing personal computers on an enterprise scale. This tool also allows for easy plugin development, deployment, and debugging so custom logic and functionality can be dynamically pushed to all of an organizations computers with the click of a button. Users register computers with the site, install a small Java based client agent, and can access their machine through their Lotus account in the web portal from anywhere with an Internet connection.
